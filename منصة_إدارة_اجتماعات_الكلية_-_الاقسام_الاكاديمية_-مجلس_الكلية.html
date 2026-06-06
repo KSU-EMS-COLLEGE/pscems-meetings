@@ -1,0 +1,2390 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<title>منصّة إدارة الاجتماعات</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --brand:#1B4F8A; --brand-d:#123568; --brand-l:#2E6DB4;
+  --gold:#C8960C; --gold-l:#E0AB1A;
+  --paper:#F4F6FA; --surface:#FFFFFF; --line:#DDE3EE; --line-d:#C8D0E0;
+  --ink:#1A2340; --ink-soft:#4A5568; --muted:#8895AA;
+  --ok:#1A7F4B; --ok-bg:#E8F5EE; --ok-line:#B0DCC0;
+  --bad:#C0392B; --bad-bg:#FAECEB; --bad-line:#EAB8B4;
+  --warn:#B7700A; --warn-bg:#FDF3E0; --warn-line:#F0D090;
+  --shadow:0 1px 3px rgba(20,30,60,.07),0 6px 20px rgba(20,30,60,.07);
+  --shadow-lg:0 12px 40px rgba(20,30,60,.18);
+  --radius:12px; --radius-s:8px;
+  --ff:"Tajawal","Segoe UI",Tahoma,sans-serif;
+  --fh:"Cairo","Tajawal","Segoe UI",Tahoma,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+html{overflow-x:hidden;width:100%;-webkit-text-size-adjust:100%}
+body{font-family:var(--ff);background:var(--paper);color:var(--ink);line-height:1.7;-webkit-font-smoothing:antialiased;font-size:15px;padding:0 24px;overflow-x:hidden;overscroll-behavior-x:none;-webkit-overflow-scrolling:touch}
+h1,h2,h3,h4,.fh{font-family:var(--fh);font-weight:600;letter-spacing:.1px}
+button{font-family:var(--ff);cursor:pointer;border:none;background:none}
+input,select,textarea{font-family:var(--ff);font-size:15px}
+a{color:var(--brand-l);text-decoration:none}
+
+/* ===== Header ===== */
+.appbar{background:linear-gradient(135deg,var(--brand-d),var(--brand));color:#fff;position:relative;overflow:hidden;border-bottom:4px solid var(--gold)}
+.appbar::after{content:"";position:absolute;inset:0;background-image:radial-gradient(circle at 1px 1px,rgba(255,255,255,.06) 1px,transparent 0);background-size:22px 22px;pointer-events:none}
+.appbar-in{max-width:1180px;margin:0 auto;padding:18px 22px;display:flex;align-items:center;gap:16px;position:relative;z-index:1;flex-wrap:wrap;justify-content:center}
+.crest{width:50px;height:50px;flex:0 0 auto;display:grid;place-items:center;background:rgba(255,255,255,.10);border:1px solid rgba(255,255,255,.22);border-radius:13px}
+.crest svg{width:30px;height:30px}
+.brand-txt h1{font-size:21px;line-height:1.3;color:#fff}
+.brand-txt p{font-size:12.5px;color:rgba(255,255,255,.78);font-weight:400}
+.appbar-side{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.conn{display:flex;align-items:center;gap:7px;font-size:12px;background:rgba(255,255,255,.10);padding:6px 11px;border-radius:20px;border:1px solid rgba(255,255,255,.16)}
+.conn .dot{width:8px;height:8px;border-radius:50%;background:var(--gold-l);box-shadow:0 0 0 3px rgba(201,168,106,.25)}
+.conn.live .dot{background:#5FE0A0;box-shadow:0 0 0 3px rgba(95,224,160,.25)}
+.conn.off .dot{background:#E88}
+.mode-pill{display:flex;align-items:center;gap:8px;font-size:12.5px;background:var(--gold);color:#3a2c12;font-weight:600;padding:6px 12px;border-radius:20px}
+.btn-admin{background:rgba(255,255,255,.12);color:#fff;border:1px solid rgba(255,255,255,.28);padding:8px 15px;border-radius:9px;font-weight:600;font-size:13.5px;transition:.15s}
+.btn-admin:hover{background:rgba(255,255,255,.2)}
+.btn-exit{background:rgba(0,0,0,.18);color:#fff;border:1px solid rgba(255,255,255,.25);padding:8px 13px;border-radius:9px;font-size:13px}
+.btn-exit:hover{background:rgba(0,0,0,.3)}
+
+/* ===== Tabs ===== */
+.tabs{background:var(--surface);border-bottom:1px solid var(--line);position:sticky;top:0;z-index:20;box-shadow:0 1px 0 rgba(0,0,0,.02)}
+.tabs-in{max-width:1180px;margin:0 auto;padding:0 14px;display:flex;gap:2px;overflow-x:auto}
+.tab{padding:15px 16px;font-family:var(--fh);font-weight:600;font-size:14.5px;color:var(--ink-soft);border-bottom:3px solid transparent;white-space:nowrap;transition:.15s;display:flex;align-items:center;gap:8px}
+.tab svg{width:18px;height:18px;opacity:.8}
+.tab:hover{color:var(--brand)}
+.tab.active{color:var(--brand);border-bottom-color:var(--brand)}
+.tab .badge{background:var(--bad);color:#fff;font-size:11px;font-weight:700;min-width:18px;height:18px;border-radius:9px;display:grid;place-items:center;padding:0 5px;font-family:var(--ff)}
+
+/* ===== Layout ===== */
+.wrap{max-width:1180px;margin:0 auto;padding:26px 40px 70px}
+
+/* ===== Public schedule (جدول عام) ===== */
+.pub-card{background:var(--surface);border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow);margin-bottom:24px;overflow:hidden}
+.pub-head{padding:18px 22px;display:flex;align-items:center;gap:14px;border-bottom:1px solid var(--line);position:relative}
+.pub-head::before{content:"";position:absolute;inset-inline-start:0;top:0;bottom:0;width:6px}
+.pub-head .pub-ic{width:46px;height:46px;flex:0 0 auto;border-radius:13px;display:grid;place-items:center}
+.pub-head .pub-ic svg{width:26px;height:26px;color:#fff}
+.pub-head .pub-name{font-family:var(--fh);font-weight:700;font-size:19px;line-height:1.35;letter-spacing:.2px}
+.pub-head .pub-count{margin-inline-start:auto;flex:0 0 auto;font-size:12.5px;font-weight:600;padding:6px 13px;border-radius:20px;white-space:nowrap}
+.pub-table{width:100%;border-collapse:collapse;font-size:14px}
+.pub-table thead tr{background:var(--paper)}
+.pub-table th{padding:12px 16px;text-align:right;color:var(--ink-soft);font-weight:700;font-size:13px;white-space:nowrap;border-bottom:2px solid var(--line-d)}
+.pub-table th.c{text-align:center}
+.pub-table td{padding:13px 16px;border-bottom:1px solid var(--line);vertical-align:middle}
+.pub-table tbody tr:last-child td{border-bottom:none}
+.pub-table tbody tr:nth-child(even){background:#FBFCFE}
+.pub-table tbody tr:hover{background:#F4F8FD}
+.pub-title{font-weight:700;font-size:15px;color:var(--ink);display:flex;align-items:center;gap:9px}
+.pub-title .dotc{width:9px;height:9px;border-radius:50%;flex:0 0 auto}
+.pub-date{display:inline-flex;align-items:center;gap:9px}
+.pub-date{display:flex;align-items:center;gap:8px}
+.pub-date .dtxt{font-size:14px;color:var(--ink);line-height:1.4}
+.pub-date .dtxt .dday{font-weight:700;color:var(--brand-d);margin-inline-end:2px}
+.pub-date .dtxt{font-size:13px;color:var(--ink-soft)}
+.pub-date .dtxt .dday{font-weight:600;color:var(--ink);display:block}
+.pub-time{display:inline-flex;align-items:center;gap:6px;color:var(--ink);font-weight:600;font-size:13.5px;white-space:nowrap}
+.pub-time svg{width:15px;height:15px;color:var(--brand-l);flex:0 0 auto}
+.pub-next{display:inline-flex;align-items:center;gap:5px;background:var(--gold);color:#3a2c12;font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;margin-inline-start:8px}
+.pub-soon{display:inline-flex;align-items:center;font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;margin-inline-start:6px}
+.pub-soon.today{background:#FDE8E8;color:#B42318;border:1px solid #F5C2C0}
+.pub-soon.tmrw{background:#FFF3E0;color:#B5681F;border:1px solid #F3D9B0}
+.pub-soon.week{background:#EEF3FA;color:#2E6DA4;border:1px solid #C5D8F0}
+.pub-soon.month{background:#F3F4F6;color:#374151;border:1px solid #D1D5DB}
+.pub-soon.far{background:#F5F3FF;color:#5B21B6;border:1px solid #DDD6FE}
+/* نموذج الاعتذار — مربعات الاختيار */
+.ex-reason-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin-top:6px}
+.ex-reason-item{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:7px;cursor:pointer;padding:14px 6px;border:2px solid var(--line-d);border-radius:13px;background:#fff;transition:all .18s;text-align:center;position:relative}
+.ex-reason-item input[type="radio"]{position:absolute;opacity:0;width:0;height:0}
+.ex-reason-item .er-icon{font-size:24px;line-height:1}
+.ex-reason-item .er-text{font-size:12.5px;font-weight:700;color:var(--ink-soft);line-height:1.3}
+.ex-reason-item:hover{border-color:var(--brand-l);background:var(--paper)}
+.ex-reason-item.ex-selected{border-color:var(--brand-d)!important;background:var(--brand-d)!important}
+.ex-reason-item.ex-selected .er-icon{filter:grayscale(1) brightness(2)}
+.ex-reason-item.ex-selected .er-text{color:#fff!important}
+/* بطاقات الاعتذارات */
+.excuse-panel{margin-top:28px}
+.excuse-panel h3{font-size:17px;color:var(--bad);display:flex;align-items:center;gap:8px;margin-bottom:14px}
+.excuse-group{background:#fff;border:1px solid var(--bad-line);border-radius:13px;margin-bottom:14px;overflow:hidden}
+.excuse-group-head{background:var(--bad-bg);padding:11px 16px;display:flex;align-items:center;justify-content:space-between;gap:10px}
+.excuse-group-head .eg-title{font-weight:700;font-size:14px;color:var(--bad)}
+.excuse-group-head .eg-meta{font-size:12.5px;color:var(--ink-soft)}
+.excuse-item{padding:12px 16px;border-top:1px solid var(--line);display:flex;align-items:flex-start;gap:14px}
+.excuse-item:first-of-type{border-top:none}
+.excuse-item .ei-info{flex:1;min-width:0}
+.excuse-item .ei-name{font-weight:700;font-size:14px;color:var(--ink)}
+.excuse-item .ei-meta{font-size:12.5px;color:var(--ink-soft);margin-top:3px;display:flex;gap:14px;flex-wrap:wrap}
+.excuse-item .ei-reason{display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:700;padding:3px 10px;border-radius:20px;background:var(--bad-bg);color:var(--bad);border:1px solid var(--bad-line)}
+.excuse-item .ei-note{font-size:12.5px;color:var(--muted);margin-top:5px;font-style:italic}
+.excuse-del{background:none;border:1px solid var(--bad-line);border-radius:8px;padding:5px 10px;color:var(--bad);cursor:pointer;font-size:12px;font-weight:600;flex:0 0 auto;transition:.15s}
+.excuse-del:hover{background:var(--bad-bg)}
+/* زر الإبلاغ في الجدول العام */
+.pub-btn.excuse{border-color:#EF444433;color:#B91C1C}
+.pub-btn.excuse:hover{background:#FEF2F2;border-color:#EF4444}
+/* عمود العداد المستقل */
+.cd-badge{display:inline-flex;flex-direction:column;align-items:center;justify-content:center;min-width:58px;padding:6px 10px;border-radius:10px;line-height:1.2;font-weight:700}
+.cd-badge b{font-size:20px;font-weight:800;line-height:1}
+.cd-badge small{font-size:11px;font-weight:600;margin-top:1px}
+.cd-today{background:#FDE8E8;color:#B42318;border:1px solid #F5C2C0;font-size:14px;padding:8px 12px}
+.cd-tmrw{background:#FFF3E0;color:#B5681F;border:1px solid #F3D9B0;font-size:14px;padding:8px 12px}
+.cd-week{background:#EEF3FA;color:#1D4ED8;border:1px solid #BFDBFE}
+.cd-month{background:#F0FDF4;color:#166534;border:1px solid #BBF7D0}
+.cd-far{background:#F5F3FF;color:#5B21B6;border:1px solid #DDD6FE}
+.pub-filters{display:flex;gap:9px;flex-wrap:wrap;margin-bottom:22px}
+.pub-filters .fbtn{font-family:var(--ff);font-size:13px;font-weight:600;padding:8px 16px;border-radius:20px;border:1px solid var(--line-d);background:var(--surface);color:var(--ink-soft);cursor:pointer;transition:all .15s}
+.pub-filters .fbtn:hover{border-color:var(--brand-l);color:var(--brand-d)}
+.pub-filters .fbtn.active{background:var(--brand-d);color:#fff;border-color:var(--brand-d)}
+.pub-note{font-size:13px;color:var(--ink-soft)}
+.pub-empty{text-align:center;color:var(--muted);padding:22px;font-size:13.5px}
+/* أزرار البطاقة (تقويم + بريد) */
+.pub-actions{display:flex;gap:9px;flex-wrap:wrap;margin-top:4px}
+.pub-btn{display:inline-flex;align-items:center;gap:7px;font-family:var(--ff);font-size:13px;font-weight:600;padding:8px 15px;border-radius:10px;border:1px solid var(--line-d);background:var(--surface);color:var(--ink-soft);cursor:pointer;transition:all .15s;white-space:nowrap}
+.pub-btn svg{width:16px;height:16px;flex:0 0 auto}
+.pub-btn:hover{border-color:var(--brand-l);color:var(--brand-d);background:var(--paper);transform:translateY(-1px)}
+.pub-btn.cal{border-color:#2E6DA433;color:var(--brand-d)}
+.pub-btn.cal:hover{background:#2E6DA40D}
+.pub-btn.mail{border-color:#C77D2E40;color:#B5681F}
+.pub-btn.mail:hover{background:#C77D2E0D;border-color:#C77D2E66}
+@media(max-width:560px){
+  .pub-head .pub-name{font-size:16px}
+  .pub-head .pub-ic{width:40px;height:40px}
+  .pub-table{font-size:13px}
+  .pub-table th,.pub-table td{padding:10px 11px}
+}
+.view{display:none;animation:fade .3s ease}
+.view.active{display:block}
+@keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.page-head{margin-bottom:20px}
+.page-head h2{font-size:23px;color:var(--brand-d)}
+.page-head p{color:var(--ink-soft);font-size:14px;margin-top:2px}
+.gold-rule{width:46px;height:3px;background:var(--gold);border-radius:2px;margin-top:9px}
+
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow)}
+.card-pad{padding:20px 22px}
+.card-h{padding:15px 20px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;gap:10px}
+.card-h h3{font-size:16px;color:var(--brand-d);display:flex;align-items:center;gap:9px}
+.card-h h3 svg{width:19px;height:19px;color:var(--brand)}
+
+.grid{display:grid;gap:18px}
+.g-3{grid-template-columns:repeat(3,1fr)}
+.g-2{grid-template-columns:repeat(2,1fr)}
+@media(max-width:820px){.g-3{grid-template-columns:1fr 1fr}.g-2{grid-template-columns:1fr}}
+@media(max-width:560px){.g-3{grid-template-columns:1fr}.tab span.lbl{display:none}.tab{padding:14px 13px}}
+
+/* Stat cards */
+.stat{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:18px 20px;box-shadow:var(--shadow);position:relative;overflow:hidden}
+.stat::before{content:"";position:absolute;inset-inline-start:0;top:0;bottom:0;width:4px;background:var(--brand)}
+.stat.is-bad::before{background:var(--bad)} .stat.is-gold::before{background:var(--gold)}
+.stat .lab{font-size:13px;color:var(--ink-soft);font-weight:500}
+.stat .num{font-size:34px;font-family:var(--fh);font-weight:700;color:var(--brand-d);line-height:1.2;margin-top:4px}
+.stat.is-bad .num{color:var(--bad)}
+.stat .sub{font-size:12px;color:var(--muted)}
+
+/* Lists */
+.mtg{display:flex;align-items:center;gap:13px;padding:13px 20px;border-bottom:1px solid var(--line);transition:.12s}
+.mtg:last-child{border-bottom:none}
+.mtg:hover{background:#FBFAF6}
+.mtg .bar{width:5px;align-self:stretch;border-radius:3px;flex:0 0 auto;min-height:38px}
+.mtg .when{flex:0 0 auto;text-align:center;min-width:62px}
+.mtg .when .d{font-family:var(--fh);font-weight:700;font-size:18px;color:var(--ink)}
+.mtg .when .mo{font-size:11px;color:var(--muted)}
+.mtg .body{flex:1;min-width:0}
+.mtg .body .t{font-weight:600;font-size:15px}
+.mtg .body .meta{font-size:12.5px;color:var(--ink-soft);display:flex;gap:12px;flex-wrap:wrap;margin-top:1px}
+.mtg .body .meta .dep{display:inline-flex;align-items:center;gap:5px}
+.mtg .body .meta .dep i{width:9px;height:9px;border-radius:50%;display:inline-block}
+.chip{font-size:11.5px;padding:2px 9px;border-radius:20px;font-weight:600;white-space:nowrap}
+.chip.rec{background:#EEF3F0;color:var(--brand)}
+.chip.cf{background:var(--bad-bg);color:var(--bad);border:1px solid var(--bad-line)}
+.row-actions{display:flex;gap:6px;flex:0 0 auto}
+.ico-btn{width:32px;height:32px;border-radius:8px;border:1px solid var(--line);background:#fff;display:grid;place-items:center;color:var(--ink-soft);transition:.12s}
+.ico-btn:hover{border-color:var(--brand);color:var(--brand)}
+.ico-btn.danger:hover{border-color:var(--bad);color:var(--bad);background:var(--bad-bg)}
+.ico-btn svg{width:16px;height:16px}
+
+.empty{text-align:center;padding:44px 20px;color:var(--muted)}
+.empty svg{width:42px;height:42px;opacity:.4;margin-bottom:10px}
+
+/* Buttons */
+.btn{display:inline-flex;align-items:center;gap:8px;padding:11px 20px;border-radius:10px;font-weight:600;font-size:14.5px;transition:.15s;border:1px solid transparent}
+.btn svg{width:17px;height:17px}
+.btn-primary{background:var(--brand);color:#fff}
+.btn-primary:hover{background:var(--brand-l)}
+.btn-ghost{background:#fff;color:var(--brand);border-color:var(--line-d)}
+.btn-ghost:hover{border-color:var(--brand);background:#FBFAF6}
+.btn-sm{padding:8px 14px;font-size:13.5px}
+.btn-block{width:100%;justify-content:center}
+.btn:disabled{opacity:.55;cursor:not-allowed}
+
+/* Conflict banner */
+.cf-alert{background:var(--bad-bg);border:1px solid var(--bad-line);border-radius:var(--radius);padding:16px 20px;display:flex;gap:14px;align-items:flex-start;margin-bottom:18px}
+.cf-alert .ic{width:38px;height:38px;border-radius:10px;background:var(--bad);color:#fff;display:grid;place-items:center;flex:0 0 auto}
+.cf-alert .ic svg{width:22px;height:22px}
+.cf-alert h4{color:var(--bad);font-size:15.5px}
+.cf-alert .lst{margin-top:9px;display:flex;flex-direction:column;gap:8px}
+.cf-item{background:#fff;border:1px solid var(--bad-line);border-radius:9px;padding:9px 13px;font-size:13px}
+.cf-item b{color:var(--bad)}
+.cf-ok{background:var(--ok-bg);border:1px solid var(--ok-line);border-radius:var(--radius);padding:15px 20px;display:flex;gap:13px;align-items:center;margin-bottom:18px}
+.cf-ok .ic{width:36px;height:36px;border-radius:10px;background:var(--ok);color:#fff;display:grid;place-items:center;flex:0 0 auto}
+.cf-ok .ic svg{width:21px;height:21px}
+.cf-ok h4{color:var(--ok);font-size:15px}
+.cf-ok p{font-size:13px;color:var(--ink-soft)}
+
+/* Forms */
+.field{margin-bottom:15px}
+.field label{display:block;font-size:13.5px;font-weight:600;color:var(--ink-soft);margin-bottom:6px}
+.field input,.field select,.field textarea{width:100%;max-width:100%;box-sizing:border-box;padding:11px 13px;border:1px solid var(--line-d);border-radius:10px;background:#fff;color:var(--ink);transition:.15s;font-family:var(--ff);font-size:15px;-webkit-appearance:none;appearance:none}
+.field input[type=date],.field input[type=time]{min-height:46px}
+.field input:focus,.field select:focus,.field textarea:focus{outline:none;border-color:var(--brand);box-shadow:0 0 0 3px rgba(14,92,66,.12)}
+.field .hint{font-size:12px;color:var(--muted);margin-top:5px}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:13px}
+
+/* Calendar */
+.cal-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:10px}
+.cal-nav{display:flex;align-items:center;gap:8px}
+.cal-title{font-family:var(--fh);font-weight:700;color:var(--brand-d);min-width:200px;text-align:center;display:flex;flex-direction:column;gap:2px;line-height:1.3}
+.cal-title .cal-greg{font-size:19px}
+.cal-title .cal-hijri-sub{font-size:13px;font-weight:500;color:var(--brand-l);opacity:.95}
+.nav-btn{width:38px;height:38px;border-radius:10px;border:1px solid var(--line-d);background:#fff;display:grid;place-items:center;color:var(--brand);transition:.12s}
+.nav-btn:hover{background:var(--brand);color:#fff;border-color:var(--brand)}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}
+.cal-dow{text-align:center;font-size:12.5px;font-weight:600;color:var(--ink-soft);padding:8px 0}
+.cal-cell{background:#fff;border:1px solid var(--line);border-radius:9px;min-height:96px;padding:6px;display:flex;flex-direction:column;gap:3px;transition:.12s}
+.cal-cell.other{background:#FAF9F5;opacity:.5}
+.cal-cell.today{border-color:var(--brand);box-shadow:inset 0 0 0 1px var(--brand)}
+.cal-cell.wknd{background:#FBFAF6}
+.cal-cell .dn{font-size:12.5px;font-weight:600;color:var(--ink-soft);display:flex;justify-content:space-between;align-items:center}
+.cal-cell.today .dn{color:var(--brand)}
+.cal-cell .hijri{font-size:10px;color:var(--muted);font-weight:400}
+.cev{font-size:11px;padding:3px 6px;border-radius:6px;color:#fff;font-weight:500;cursor:pointer;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:flex;align-items:center;gap:4px}
+.cev.cf{box-shadow:0 0 0 2px var(--bad)}
+.cev .wf{flex:0 0 auto}
+.cev .wf svg{width:9px;height:9px;display:block}
+@media(max-width:560px){.cal-cell{min-height:64px}.cev .tx{display:none}.cev{justify-content:center;padding:3px}}
+
+/* Slot checker result */
+.slot-res{border-radius:var(--radius);padding:20px;margin-top:6px;text-align:center;border:1px solid;animation:fade .25s}
+.slot-res.free{background:var(--ok-bg);border-color:var(--ok-line)}
+.slot-res.busy{background:var(--bad-bg);border-color:var(--bad-line)}
+.slot-res .ic{width:54px;height:54px;border-radius:50%;display:grid;place-items:center;margin:0 auto 10px}
+.slot-res.free .ic{background:var(--ok);color:#fff} .slot-res.busy .ic{background:var(--bad);color:#fff}
+.slot-res .ic svg{width:30px;height:30px}
+.slot-res h3{font-size:21px;font-family:var(--fh)}
+.slot-res.free h3{color:var(--ok)} .slot-res.busy h3{color:var(--bad)}
+.slot-res p{font-size:13.5px;color:var(--ink-soft);margin-top:3px}
+.day-list{margin-top:16px;text-align:right}
+.day-list .dh{font-size:13px;font-weight:600;color:var(--ink-soft);margin-bottom:8px;display:flex;align-items:center;gap:7px}
+.day-item{display:flex;align-items:center;gap:10px;background:#fff;border:1px solid var(--line);border-radius:9px;padding:9px 12px;margin-bottom:6px;font-size:13px}
+.day-item i{width:8px;height:8px;border-radius:50%;flex:0 0 auto}
+.day-item .tm{margin-inline-start:auto;color:var(--ink-soft);font-variant-numeric:tabular-nums}
+
+/* Dept cards */
+.dept-card{background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:18px;box-shadow:var(--shadow);position:relative;overflow:hidden}
+.dept-card .stripe{position:absolute;top:0;inset-inline-start:0;width:5px;bottom:0}
+.dept-card h3{font-size:17px;display:flex;align-items:center;gap:10px}
+.dept-card h3 .swatch{width:16px;height:16px;border-radius:5px;flex:0 0 auto}
+.dept-card .cnt{font-size:13px;color:var(--ink-soft);margin-top:6px}
+.dept-card .acts{margin-top:14px;display:flex;gap:8px}
+
+/* Table */
+.tbl{width:100%;border-collapse:collapse;font-size:14px}
+.tbl th{text-align:right;padding:11px 14px;background:#FBFAF6;color:var(--ink-soft);font-weight:600;font-size:12.5px;border-bottom:1px solid var(--line);white-space:nowrap}
+.tbl td{padding:11px 14px;border-bottom:1px solid var(--line);vertical-align:middle}
+.tbl tr:last-child td{border-bottom:none}
+.tbl tr:hover td{background:#FBFAF6}
+.dep-tag{display:inline-flex;align-items:center;gap:6px;font-weight:500}
+.dep-tag i{width:9px;height:9px;border-radius:50%}
+.filter-bar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:16px}
+.fbtn{padding:7px 14px;border-radius:20px;border:1px solid var(--line-d);background:#fff;font-size:13px;font-weight:500;color:var(--ink-soft);transition:.12s}
+.fbtn.active{background:var(--brand);color:#fff;border-color:var(--brand)}
+
+/* Modal */
+.overlay{position:fixed;inset:0;background:rgba(20,35,28,.5);backdrop-filter:blur(3px);display:none;align-items:center;justify-content:center;z-index:100;padding:20px;animation:fade .2s}
+.overlay.show{display:flex}
+.modal{background:var(--surface);border-radius:18px;box-shadow:var(--shadow-lg);width:100%;max-width:480px;max-height:90vh;overflow:auto;animation:pop .25s ease}
+@keyframes pop{from{opacity:0;transform:translateY(14px) scale(.98)}to{opacity:1;transform:none}}
+.modal-h{padding:20px 24px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between}
+.modal-h h3{font-size:18px;color:var(--brand-d);display:flex;align-items:center;gap:10px}
+.modal-h h3 svg{width:21px;height:21px;color:var(--brand)}
+.modal-x{width:34px;height:34px;border-radius:9px;display:grid;place-items:center;color:var(--muted);transition:.12s}
+.modal-x:hover{background:var(--paper);color:var(--ink)}
+.modal-b{padding:22px 24px}
+.modal-f{padding:16px 24px;border-top:1px solid var(--line);display:flex;gap:10px;justify-content:flex-end}
+.pin-row{display:flex;gap:10px;justify-content:center;direction:ltr;margin:8px 0 4px}
+.pin-row input{width:54px;height:60px;text-align:center;font-size:26px;font-family:var(--fh);font-weight:700;border:1px solid var(--line-d);border-radius:12px}
+.pin-row input:focus{outline:none;border-color:var(--brand);box-shadow:0 0 0 3px rgba(14,92,66,.14)}
+.err-msg{background:var(--bad-bg);border:1px solid var(--bad-line);color:var(--bad);font-size:13px;padding:9px 13px;border-radius:9px;margin-top:12px;display:none}
+.err-msg.show{display:block}
+
+/* Setup screen */
+.setup{max-width:760px;margin:30px auto;padding:0 20px}
+.setup .card-pad{padding:26px 28px}
+.step{display:flex;gap:14px;padding:16px 0;border-bottom:1px dashed var(--line)}
+.step:last-child{border-bottom:none}
+.step .n{width:30px;height:30px;border-radius:50%;background:var(--brand);color:#fff;display:grid;place-items:center;font-weight:700;font-family:var(--fh);flex:0 0 auto;font-size:14px}
+.step .c{flex:1}
+.step .c b{font-size:15px}
+.step .c p{font-size:13.5px;color:var(--ink-soft);margin-top:3px}
+.step code{background:#F0EEE6;padding:2px 7px;border-radius:5px;font-family:ui-monospace,monospace;font-size:12.5px;direction:ltr;display:inline-block}
+.code-box{background:#13261E;color:#CDEBDC;border-radius:12px;padding:16px 18px;font-family:ui-monospace,"Courier New",monospace;font-size:12.5px;direction:ltr;text-align:left;overflow-x:auto;margin-top:10px;line-height:1.7;white-space:pre}
+.toast{position:fixed;bottom:24px;right:24px;background:var(--brand-d);color:#fff;padding:13px 20px;border-radius:11px;box-shadow:var(--shadow-lg);font-size:14px;z-index:200;display:flex;align-items:center;gap:10px;animation:slideUp .3s;max-width:90vw}
+.toast svg{width:18px;height:18px;color:#5FE0A0}
+@keyframes slideUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:none}}
+.foot{text-align:center;color:var(--muted);font-size:12px;padding:24px}
+.loading{text-align:center;padding:70px 20px;color:var(--ink-soft)}
+.spin{width:34px;height:34px;border:3px solid var(--line);border-top-color:var(--brand);border-radius:50%;animation:rot 1s linear infinite;margin:0 auto 14px}
+@keyframes rot{to{transform:rotate(360deg)}}
+.hide{display:none!important}
+@media(max-width:640px){
+  /* الترويسة على الجوال */
+  .appbar-in{flex-wrap:wrap;padding:14px 16px;gap:8px;justify-content:space-between!important;align-items:center!important}
+  .appbar-in>div:first-child{display:none!important} /* إخفاء الشعار على الجوال */
+  .appbar-in>div:nth-child(2){flex:1 1 100%!important;order:1;text-align:center!important}
+  .appbar-in>div:last-child{flex:0 0 auto!important;order:2;width:100%;display:flex;justify-content:center}
+  .appbar-in div[style*="font-size:18px"]{font-size:14px!important;line-height:1.6!important}
+  #connState{margin-top:6px!important;font-size:11.5px}
+  #adminBtn{font-size:13px!important;padding:9px 20px!important;margin-top:4px}
+  /* المحتوى */
+  .wrap{padding:12px 10px 70px}
+  .g-3,.g-2{grid-template-columns:1fr!important}
+  .page-head h2{font-size:18px}
+  .page-head p{font-size:13px}
+  /* التقويم */
+  .cal-cell{min-height:52px!important;padding:3px}
+  .cal-dow{font-size:10px;padding:5px 0}
+  .cev .tx{display:none}
+  .cal-title{min-width:130px}
+  .cal-title .cal-greg{font-size:15px!important}
+  .cal-title .cal-hijri-sub{font-size:11.5px!important}
+  /* الجدول */
+  .tbl{font-size:12px;display:block;overflow-x:auto}
+  .tbl th,.tbl td{padding:7px 5px;white-space:nowrap}
+  /* ===== الجدول العام على الجوال: تحويل لبطاقات ===== */
+  .pub-table thead{display:none}
+  .pub-table,.pub-table tbody,.pub-table tr,.pub-table td{display:block;width:100%}
+  .pub-table tr{
+    background:var(--surface)!important;
+    border:1px solid var(--line);
+    border-radius:13px;
+    margin:0 12px 12px;
+    padding:13px 15px;
+    box-shadow:0 1px 3px rgba(20,30,60,.05);
+  }
+  .pub-table tbody tr:nth-child(even){background:var(--surface)!important}
+  .pub-table td{
+    padding:0!important;
+    border:none!important;
+    display:flex;
+    align-items:baseline;
+    justify-content:flex-start;
+    gap:6px;
+    margin-bottom:10px;
+  }
+  .pub-table td:last-child{margin-bottom:0}
+  /* عنوان كل حقل قبل قيمته */
+  .pub-table td::before{
+    content:attr(data-label) ":";
+    flex:0 0 auto;
+    font-size:13px;
+    font-weight:700;
+    color:var(--ink-soft);
+    white-space:nowrap;
+  }
+  /* صف العنوان: يكون رأس البطاقة بدون label */
+  .pub-table td.cell-title{
+    display:block;
+    margin-bottom:11px;
+    padding-bottom:11px!important;
+    border-bottom:1px dashed var(--line)!important;
+  }
+  .pub-table td.cell-title::before{display:none}
+  .pub-table td.cell-title .pub-title{font-size:15.5px}
+  /* القيمة تبدأ مباشرة بعد العنوان من جهة اليمين */
+  .pub-table td>span,.pub-table td>div:not(.pub-title){
+    flex:0 1 auto;text-align:right;font-size:13.5px;color:var(--ink)
+  }
+  /* التاريخ على الجوال: نص متصل بدون المربع المنفصل */
+  .pub-table td[data-label="التاريخ"] .pub-date{display:inline;gap:0}
+  .pub-table td[data-label="التاريخ"] .dtxt{font-size:13.5px;color:var(--ink)}
+  .pub-table td[data-label="التاريخ"] .dtxt .dday{display:inline;font-weight:600}
+  .pub-table td[data-label="التاريخ"] .dtxt .dday::after{content:" "}
+  /* الوقت على الجوال: سطر واحد متصل */
+  .pub-table td[data-label="الوقت"]{align-items:center}
+  .pub-table td[data-label="الوقت"] .pub-time{display:inline-flex;flex-wrap:nowrap;font-size:13.5px;color:var(--ink);font-weight:400}
+  .pub-table td[data-label="المتبقي"]{align-items:center;justify-content:flex-start}
+  .pub-table td[data-label="المتبقي"] .cd-badge{flex-direction:row;gap:4px;min-width:auto;padding:4px 10px}
+  .pub-table td[data-label="المتبقي"] .cd-badge b{font-size:14px}
+  .pub-table td[data-label="المتبقي"] .cd-badge small{font-size:12px;margin-top:0}
+  .pub-table td[data-label="الوقت"] .pub-time svg{width:14px;height:14px}
+  .pub-table td[data-label="الوقت"] .pt-txt{white-space:nowrap}
+  .pub-head .pub-count{font-size:11.5px;padding:5px 11px}
+  /* صف فراغ القسم: بطاقة بسيطة */
+  .pub-table tr.pub-empty-row{padding:0;background:transparent!important;border:none;box-shadow:none;margin:0 12px 12px}
+  .pub-table tr.pub-empty-row td{background:var(--surface);border:1px solid var(--line)!important;border-radius:13px;padding:16px!important;color:var(--muted)}
+  .pub-table tr.pub-empty-row td::before{display:none}
+  /* خلية الأزرار: كامل العرض بدون عنوان جانبي */
+  .pub-table td.cell-actions{display:block;margin-top:11px;padding-top:11px!important;border-top:1px dashed var(--line)!important}
+  .pub-table td.cell-actions::before{display:none}
+  .pub-table td.cell-actions .pub-actions{margin-top:0;display:grid;grid-template-columns:1fr 1fr;gap:7px}
+  .pub-table td.cell-actions .pub-actions .excuse{grid-column:1/-1}
+  .pub-btn{justify-content:center;font-size:12.5px;padding:8px 10px}
+  /* رأس بطاقة القسم على الجوال */
+  .pub-head{padding:14px 16px;gap:10px}
+  .pub-head .pub-name{font-size:15px;line-height:1.35}
+  .pub-head .pub-ic{width:38px;height:38px;border-radius:11px}
+  .pub-head .pub-ic svg{width:22px;height:22px}
+
+  /* ===== بطاقة مجلس الكلية على الجوال ===== */
+  .council-card{padding:18px 16px!important;gap:14px!important;flex-direction:column!important;text-align:center}
+  .council-ic{width:54px!important;height:54px!important;border-radius:14px!important}
+  .council-ic svg{width:28px!important;height:28px!important}
+  .council-name{font-size:18px!important;line-height:1.4!important}
+  .council-info{flex:1 1 100%!important;min-width:0!important}
+  .council-actions{width:100%;justify-content:center}
+  .council-actions .btn{flex:1;justify-content:center;font-size:13px!important}
+
+  /* ===== سجلّ الاجتماعات على الجوال: تحويل لبطاقات ===== */
+  .tbl-meetings thead{display:none}
+  .tbl-meetings,.tbl-meetings tbody,.tbl-meetings tr,.tbl-meetings td{display:block;width:100%}
+  .tbl-meetings tr{
+    background:var(--surface);
+    border:1px solid var(--line);
+    border-radius:13px;
+    margin:0 0 12px;
+    padding:14px 15px;
+    box-shadow:0 1px 3px rgba(20,30,60,.05);
+  }
+  .tbl-meetings td{
+    padding:0!important;
+    border:none!important;
+    white-space:normal!important;
+    display:flex;
+    align-items:baseline;
+    justify-content:flex-start;
+    gap:6px;
+    margin-bottom:10px;
+  }
+  .tbl-meetings td::before{
+    content:attr(data-label) ":";
+    flex:0 0 auto;
+    font-size:13px;
+    font-weight:700;
+    color:var(--ink-soft);
+    white-space:nowrap;
+  }
+  /* رأس البطاقة: عنوان الاجتماع */
+  .tbl-meetings td.cell-mtg-title{
+    display:block;
+    margin-bottom:11px;
+    padding-bottom:11px!important;
+    border-bottom:1px dashed var(--line)!important;
+  }
+  .tbl-meetings td.cell-mtg-title::before{display:none}
+  .tbl-meetings td.cell-mtg-title>div{font-size:15.5px}
+  /* خلية الإجراءات */
+  .tbl-meetings td.cell-mtg-actions{
+    margin-top:11px;margin-bottom:0;
+    padding-top:11px!important;
+    border-top:1px dashed var(--line)!important;
+    justify-content:flex-start;
+  }
+  .tbl-meetings td.cell-mtg-actions::before{display:none}
+  .tbl-meetings td.cell-mtg-actions .row-actions{display:flex;gap:10px}
+  .tbl-meetings td.cell-mtg-actions .ico-btn{width:42px;height:42px}
+  /* القيمة تبدأ مباشرة بعد العنوان من جهة اليمين */
+  .tbl-meetings td>span,.tbl-meetings td:not(.cell-mtg-title):not(.cell-mtg-actions){text-align:right;font-size:13.5px;color:var(--ink)}
+  .tbl-meetings td>div:not(.row-actions){flex:0 1 auto}
+  /* التاريخ والوقت: عرض متصل */
+  .tbl-meetings td[data-label="التاريخ"]{flex-wrap:wrap}
+  .tbl-meetings td[data-label="التاريخ"]>div{font-size:11px;color:var(--muted);width:100%;margin-right:0}
+  .tbl-meetings td[data-label="الوقت"] br{display:none}
+  .tbl-meetings .dep-tag{justify-content:flex-start}
+  /* صف لا توجد اجتماعات */
+  .tbl-meetings td[colspan]{display:block;text-align:center}
+  .tbl-meetings td[colspan]::before{display:none}
+
+  /* النماذج */
+  .two{grid-template-columns:1fr!important}
+  .card-pad{padding:12px}
+  /* ضمان عدم تجاوز الحقول لإطار الشاشة على الجوال */
+  .field{max-width:100%}
+  .field input,.field select,.field textarea{width:100%!important;max-width:100%!important;box-sizing:border-box!important}
+  #view-check .card,#view-check .field{max-width:100%;box-sizing:border-box}
+  /* المودال من الأسفل */
+  .modal{border-radius:18px 18px 0 0!important;position:fixed!important;bottom:0!important;left:0!important;right:0!important;max-width:100%!important;max-height:88vh!important;overflow-y:auto}
+  .overlay{align-items:flex-end!important;padding:0!important}
+  /* الفلاتر */
+  .filter-bar{gap:5px}
+  .fbtn{padding:5px 9px;font-size:11.5px}
+  /* البطاقات الإحصائية */
+  .stat .num{font-size:26px}
+  .stat{padding:14px}
+  /* التبويبات */
+  .tabs-in{gap:0}
+  .tab{padding:14px 10px;font-size:13px}
+  .tab svg{width:22px!important;height:22px!important}
+  .tab .lbl{font-size:12.5px}
+  /* عام — استقرار الجوال */
+  html{overflow-x:hidden!important;width:100%!important}
+  body{overflow-x:hidden!important;overscroll-behavior-x:none!important;padding:0 12px!important}
+  .mtg{padding:10px 14px}
+  .btn{font-size:13.5px}
+  /* كل العناصر ضمن العرض */
+  .wrap,.card,.modal,.pub-card,.council-card,.field,.two,.g-2,.g-3{max-width:100%!important;box-sizing:border-box}
+  input,select,textarea{max-width:100%;box-sizing:border-box}
+  /* Modal على الجوال */
+  .modal{width:calc(100vw - 24px)!important;max-width:calc(100vw - 24px)!important;max-height:92dvh!important;overflow-y:auto}
+  .overlay{padding:16px 12px!important;align-items:flex-start;padding-top:40px!important}
+  /* حقول الإدخال — منع زوم iOS */
+  input,select,textarea{font-size:16px!important}
+  .pin-row input{width:48px!important;height:54px!important;font-size:22px!important}
+  /* نموذج الاجتماع */
+  .two{grid-template-columns:1fr!important}
+  /* نموذج الاعتذار */
+  .ex-reason-grid{grid-template-columns:repeat(3,1fr)!important}
+  /* الفلاتر والأزرار */
+  .filter-bar{gap:7px;flex-wrap:wrap}
+  .fbtn{font-size:12px;padding:7px 13px}
+  /* شريط التبويبات */
+  .tabs-in{padding:0 4px;scrollbar-width:none}
+  .tabs-in::-webkit-scrollbar{display:none}
+  /* الجدول العام */
+  .pub-card{margin-bottom:16px!important}
+  .pub-table tr{margin:0 0 10px!important;width:100%!important}
+  /* عداد المتبقي على الجوال */
+  .cd-badge{min-width:50px!important}
+}
+@media print{
+  .appbar,.tabs,.appbar-side,.btn-admin,.btn-exit,.modePill,.filter-bar,.row-actions,.foot,#footNote{display:none!important}
+  .wrap{padding:10px!important}
+  .card{box-shadow:none!important;border:1px solid #ccc!important}
+  body{background:#fff!important;color:#000!important;font-size:13px}
+  .page-head h2{color:#000!important;font-size:18px}
+  .print-hide{display:none!important}
+  .print-show{display:block!important}
+  @page{margin:1.5cm;size:A4}
+}
+.print-show{display:none}
+</style>
+</head>
+<body>
+
+<!-- ===== Header ===== -->
+<header class="appbar">
+  <div class="appbar-in" style="justify-content:space-between;align-items:center;gap:20px">
+    <!-- أقصى اليمين: شعار -->
+    <div style="flex:0 0 auto;border-radius:10px;overflow:hidden;height:90px">
+      <img src="data:image/png;base64,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" style="height:90px;width:auto;object-fit:contain;display:block" alt="جامعة الملك سعود">
+    </div>
+    <!-- الوسط: نصوص -->
+    <div style="flex:1;text-align:center">
+      <div style="font-size:18px;font-weight:700;opacity:.96;line-height:1.7">جامعة الملك سعود</div>
+      <div style="font-size:18px;font-weight:700;opacity:.96;line-height:1.7">كلية الأمير سلطان بن عبدالعزيز للخدمات الطبية الطارئة</div>
+      <div style="font-size:18px;font-weight:700;opacity:.96;line-height:1.7">منصّة إدارة الاجتماعات</div>
+      <div id="connState" class="conn" style="margin-top:8px;display:inline-flex"><span class="dot"></span><span id="connTxt">جارٍ الاتصال…</span></div>
+    </div>
+    <!-- أقصى اليسار: زر دخول -->
+    <div style="flex:0 0 auto;display:flex;flex-direction:column;align-items:flex-end;gap:8px">
+      <div id="modePill" class="mode-pill hide"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 2l8 4v6c0 5-3.5 8-8 10-4.5-2-8-5-8-10V6z"/></svg><span id="modeName"></span></div>
+      <button id="adminBtn" class="btn-admin hide" onclick="openAdminLogin()" style="background:#fff;color:var(--brand-d);border:none;font-weight:700;padding:10px 18px;border-radius:10px;font-size:14px">دخول الموظفين</button>
+      <button id="exitBtn" class="btn-exit hide" onclick="exitAdmin()">خروج من الإدارة</button>
+    </div>
+  </div>
+</header>
+
+<!-- ===== Tabs ===== -->
+<nav class="tabs" id="tabsBar">
+  <div class="tabs-in">
+    <button class="tab active" data-view="home" onclick="go('home')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 12l9-8 9 8"/><path d="M5 10v10h14V10"/></svg><span class="lbl">الرئيسية</span></button>
+    <button class="tab" data-view="calendar" onclick="go('calendar')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 2v4M16 2v4"/></svg><span class="lbl">التقويم</span></button>
+    <button class="tab" data-view="check" onclick="go('check')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 12a9 9 0 1 1-5-8.05" stroke-linecap="round"/><path d="M12 7.5V12l2.5 1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="m16 5 2 2 3.5-3.5" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="lbl">فحص موعد</span></button>
+    <button class="tab" data-view="meetings" onclick="go('meetings')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 6h13M8 12h13M8 18h13"/><circle cx="3.5" cy="6" r="1.3"/><circle cx="3.5" cy="12" r="1.3"/><circle cx="3.5" cy="18" r="1.3"/></svg><span class="lbl">الاجتماعات</span></button>
+    <button class="tab" data-view="depts" onclick="go('depts')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18"/><path d="M4 21V9l8-5 8 5v12"/><path d="M9 21v-5h6v5"/><path d="M8 11h.01M12 11h.01M16 11h.01"/></svg><span class="lbl">الأقسام</span></button>
+    <button class="tab" data-view="program" onclick="go('program')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M9 7h6M9 11h6M9 15h3"/></svg><span class="lbl">إدارة البرنامج</span></button>
+    <button class="tab" data-view="committees" onclick="go('committees')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6"/><path d="M16 4.5a3 3 0 0 1 0 6M18 14c2.3.6 4 2.6 4 5"/></svg><span class="lbl">اجتماعات اللجان</span></button>
+    <button class="tab" data-view="public" onclick="go('public')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18M3 14.5h18M9 9v11"/></svg><span class="lbl">الجدول العام</span></button>
+  </div>
+</nav>
+
+<!-- ===== Setup screen (shown when Firebase not configured) ===== -->
+<div id="setupScreen" class="setup hide">
+  <div class="card"><div class="card-pad">
+    <h2 style="color:var(--brand-d);font-size:22px;display:flex;align-items:center;gap:10px">
+      <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="var(--brand)" stroke-width="1.8"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+      إعداد المنصّة (مرّة واحدة)
+    </h2>
+    <div class="gold-rule"></div>
+    <p style="color:var(--ink-soft);margin:14px 0 6px;font-size:14.5px">عشان تشتغل المنصّة على الأقسام الأربعة في نفس الوقت، تحتاج تربطها بقاعدة بيانات مجانية من Google. اتبع الخطوات، وتسوّيها مرّة واحدة فقط:</p>
+    <div id="setupSteps"></div>
+  </div></div>
+</div>
+
+<!-- ===== Main app ===== -->
+<div id="app" class="hide">
+
+  <!-- HOME -->
+  <section id="view-home" class="view active wrap-inner"></section>
+  <!-- CALENDAR -->
+  <section id="view-calendar" class="view"></section>
+  <!-- CHECK -->
+  <section id="view-check" class="view"></section>
+  <!-- MEETINGS -->
+  <section id="view-meetings" class="view"></section>
+  <!-- DEPTS -->
+  <section id="view-depts" class="view"></section>
+  <!-- PROGRAM -->
+  <section id="view-program" class="view"></section>
+  <!-- COMMITTEES -->
+  <section id="view-committees" class="view"></section>
+  <!-- PUBLIC SCHEDULE -->
+  <section id="view-public" class="view"></section>
+
+  <div class="foot" id="footNote"></div>
+</div>
+
+<div id="loadingScreen" class="loading">
+  <div class="spin"></div>
+  <div>جارٍ تحميل البيانات…</div>
+</div>
+
+<!-- ===== Modals ===== -->
+<div class="overlay" id="ovAdmin">
+  <div class="modal" style="max-width:430px">
+    <div class="modal-h"><h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg> دخول الموظفين</h3><button class="modal-x" onclick="closeOv('ovAdmin')">✕</button></div>
+    <div class="modal-b">
+      <div class="field"><label>اختر القسم</label><select id="adminDept"></select></div>
+      <div class="field"><label>رمز القسم (4 أرقام)</label>
+        <div class="pin-row" id="pinRow">
+          <input maxlength="1" inputmode="numeric" pattern="[0-9]"><input maxlength="1" inputmode="numeric" pattern="[0-9]"><input maxlength="1" inputmode="numeric" pattern="[0-9]"><input maxlength="1" inputmode="numeric" pattern="[0-9]">
+        </div>
+        <div class="hint" style="text-align:center">الرمز الافتراضي لكل قسم هو <b>1234</b> — يُنصح بتغييره من تبويب «الأقسام».</div>
+      </div>
+      <div class="err-msg" id="pinErr">الرمز غير صحيح. حاول مرة أخرى.</div>
+    </div>
+    <div class="modal-f"><button class="btn btn-ghost btn-sm" onclick="closeOv('ovAdmin')">إلغاء</button><button class="btn btn-primary btn-sm" onclick="submitPin()">دخول</button></div>
+  </div>
+</div>
+
+<div class="overlay" id="ovMtg">
+  <div class="modal">
+    <div class="modal-h"><h3 id="mtgTitle"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 2v4M16 2v4"/></svg> إضافة اجتماع</h3><button class="modal-x" onclick="closeOv('ovMtg')">✕</button></div>
+    <div class="modal-b">
+      <input type="hidden" id="mtgId">
+      <div class="field"><label>عنوان الاجتماع</label><input id="mtgT" placeholder="مثال: مجلس القسم الدوري"></div>
+      <div class="field"><label>القسم/الجهة</label><input id="mtgDeptName" disabled style="background:#FBFAF6;color:var(--ink-soft)"><select id="mtgDeptSA" class="hide" onchange="onSADeptChange()"></select><input type="hidden" id="mtgDept"></div>
+      <div class="field"><label>التاريخ</label><input type="date" id="mtgDate"><div class="hint" id="mtgHijri"></div><div id="mtgCouncilAlert"></div></div>
+      <div class="two">
+        <div class="field"><label>من الساعة</label><input type="time" id="mtgStart" value="10:00"></div>
+        <div class="field"><label>إلى الساعة</label><input type="time" id="mtgEnd" value="11:00"></div>
+      </div>
+      <div class="field"><label>مكان الاجتماع</label>
+        <select id="mtgPlace" onchange="onPlaceChange()">
+          <option value="hall">قاعة الاجتماعات</option>
+          <option value="remote">عن بُعد</option>
+          <option value="other">أخرى (تحديد يدوي)</option>
+        </select>
+        <div class="hint" id="mtgHallHint" style="margin-top:6px"></div>
+      </div>
+      <div class="field hide" id="mtgRemoteWrap"><label>رابط/طريقة الاجتماع عن بُعد (اختياري)</label><input id="mtgRemote" placeholder="مثال: رابط زوم أو تيمز"></div>
+      <div class="field hide" id="mtgOtherWrap"><label>تحديد المكان</label><input id="mtgOther" placeholder="اكتب مكان الاجتماع"></div>
+      <div id="mtgLiveCheck"></div>
+      <div class="err-msg" id="mtgErr"></div>
+    </div>
+    <div class="modal-f">
+      <button class="btn btn-ghost btn-sm hide" id="mtgDelBtn" onclick="deleteMtg()" style="margin-inline-end:auto;color:var(--bad);border-color:var(--bad-line)">حذف</button>
+      <button class="btn btn-ghost btn-sm" onclick="closeOv('ovMtg')">إلغاء</button>
+      <button class="btn btn-primary btn-sm" onclick="saveMtg()">حفظ</button>
+    </div>
+  </div>
+</div>
+
+<div class="overlay" id="ovDept">
+  <div class="modal" style="max-width:430px">
+    <div class="modal-h"><h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg> تعديل بيانات القسم</h3><button class="modal-x" onclick="closeOv('ovDept')">✕</button></div>
+    <div class="modal-b">
+      <input type="hidden" id="dEditId">
+      <div class="field"><label>اسم القسم</label><input id="dName"></div>
+      <div class="field"><label>لون القسم</label>
+        <div id="colorPick" style="display:flex;gap:9px;flex-wrap:wrap;margin-top:4px"></div>
+      </div>
+      <div class="field"><label>تغيير رمز القسم (اتركه فارغًا للإبقاء على الحالي)</label><input id="dPin" maxlength="4" inputmode="numeric" placeholder="4 أرقام جديدة"></div>
+      <div class="err-msg" id="dErr"></div>
+    </div>
+    <div class="modal-f"><button class="btn btn-ghost btn-sm" onclick="closeOv('ovDept')">إلغاء</button><button class="btn btn-primary btn-sm" onclick="saveDept()">حفظ</button></div>
+  </div>
+</div>
+
+<div class="overlay" id="ovCommittee">
+  <div class="modal" style="max-width:440px">
+    <div class="modal-h"><h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3"/><path d="M3 19c0-3 2.7-5 6-5s6 2 6 5"/><path d="M16 5a3 3 0 0 1 0 6"/></svg> إضافة لجنة جديدة</h3><button class="modal-x" onclick="closeOv('ovCommittee')">✕</button></div>
+    <div class="modal-b">
+      <div class="field"><label>اسم اللجنة</label><input id="cName" placeholder="مثال: لجنة الجودة والاعتماد الأكاديمي"></div>
+      <div class="field"><label>لون اللجنة</label>
+        <div id="cColorPick" style="display:flex;gap:9px;flex-wrap:wrap;margin-top:4px"></div>
+      </div>
+      <div class="field"><label>الرمز السري لموظف اللجنة (4 أرقام)</label><input id="cPin" maxlength="4" inputmode="numeric" placeholder="مثال: 5678"><div class="hint">يُعطى هذا الرمز للموظف المسؤول عن اللجنة ليدخل ويضيف اجتماعاتها.</div></div>
+      <div class="err-msg" id="cErr"></div>
+    </div>
+    <div class="modal-f"><button class="btn btn-ghost btn-sm" onclick="closeOv('ovCommittee')">إلغاء</button><button class="btn btn-primary btn-sm" onclick="saveCommittee()">إنشاء اللجنة</button></div>
+  </div>
+</div>
+
+<!-- نموذج إبلاغ عن تعارض/اعتذار -->
+<div class="overlay" id="ovExcuse">
+  <div class="modal" style="max-width:460px">
+    <div class="modal-h">
+      <h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v5m0 3h.01"/></svg> إبلاغ عن تعارض أو اعتذار</h3>
+      <button class="modal-x" onclick="closeOv('ovExcuse')">✕</button>
+    </div>
+    <div class="modal-b">
+      <input type="hidden" id="exMtgId">
+      <input type="hidden" id="exMtgDate">
+      <!-- تفاصيل الاجتماع -->
+      <div id="exMtgInfo" style="background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:11px 14px;margin-bottom:14px;font-size:13.5px;color:var(--ink-soft)"></div>
+      <!-- سبب الاعتذار -->
+      <div class="field">
+        <label>سبب التعارض</label>
+        <div class="ex-reason-grid" id="exReasonGroup">
+          <label class="ex-reason-item" id="exR1" onclick="selectExReason('external')">
+            <input type="radio" name="exReason" value="external">
+            <span class="er-icon">🏛️</span>
+            <span class="er-text">اجتماع خارجي</span>
+          </label>
+          <label class="ex-reason-item" id="exR2" onclick="selectExReason('personal')">
+            <input type="radio" name="exReason" value="personal">
+            <span class="er-icon">🏠</span>
+            <span class="er-text">ظرف خاص</span>
+          </label>
+          <label class="ex-reason-item" id="exR3" onclick="selectExReason('other')">
+            <input type="radio" name="exReason" value="other">
+            <span class="er-icon">📋</span>
+            <span class="er-text">أخرى</span>
+          </label>
+        </div>
+      </div>
+      <!-- ملاحظة -->
+      <div class="field"><label>ملاحظة / تفاصيل (اختياري)</label><textarea id="exNote" rows="2" placeholder="اكتب أي تفاصيل إضافية هنا…" style="resize:none"></textarea></div>
+      <!-- بيانات العضو -->
+      <div style="border-top:1px solid var(--line);padding-top:14px;margin-top:4px">
+        <div style="font-size:12.5px;font-weight:700;color:var(--ink-soft);margin-bottom:10px;text-transform:uppercase;letter-spacing:.5px">بيانات العضو</div>
+        <div class="two">
+          <div class="field" style="margin-bottom:12px"><label>الاسم الكامل</label><input id="exName" placeholder="الاسم الرباعي"></div>
+          <div class="field" style="margin-bottom:12px"><label>الرقم الوظيفي</label><input id="exEmpId" placeholder="مثال: 12345678" inputmode="numeric"></div>
+        </div>
+        <div class="field" style="margin-bottom:0"><label>رقم الجوال</label><input id="exPhone" placeholder="05XXXXXXXX" inputmode="tel" maxlength="13"></div>
+      </div>
+      <div class="err-msg" id="exErr"></div>
+    </div>
+    <div class="modal-f">
+      <button class="btn btn-ghost btn-sm" onclick="closeOv('ovExcuse')">إلغاء</button>
+      <button class="btn btn-primary btn-sm" onclick="saveExcuse()" style="background:var(--bad);border-color:var(--bad)">إرسال الإبلاغ</button>
+    </div>
+  </div>
+</div>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+<script>
+/* ============================================================
+   ① إعدادات الاتصال — الصق هنا بيانات مشروع Firebase
+   ============================================================ */
+const FIREBASE_CONFIG = {
+  apiKey: "AIzaSyCMslpk6J_vPmWJmq0DlGU1x92xNKO5gAU",
+  authDomain: "meeting-system-sultan-college.firebaseapp.com",
+  projectId: "meeting-system-sultan-college",
+  storageBucket: "meeting-system-sultan-college.firebasestorage.app",
+  messagingSenderId: "962386000543",
+  appId: "1:962386000543:web:aff42a858fce709b0380aa",
+  measurementId: "G-7R44KKJLSB"
+};
+/* ============================================================ */
+
+/* ============================================================
+   ② إعدادات البريد الإلكتروني (EmailJS) — اختياري
+      سجّل مجاناً على emailjs.com واملأ البيانات أدناه
+   ============================================================ */
+const EMAILJS_CONFIG = {
+  serviceId: "",
+  templateId: "",
+  publicKey: ""
+};
+/* ============================================================ */
+
+const COLORS=['#2E6DA4','#C77D2E','#4B8B3B','#9C4221','#7B4FA0','#0E7C86','#B0306A','#5A6270'];
+const REC_LABEL={none:'مرة واحدة',weekly:'أسبوعي',biweekly:'كل أسبوعين',monthly:'شهري'};
+const DOW_AR=['الأحد','الإثنين','الثلاثاء','الأربعاء','الخميس','الجمعة','السبت'];
+const MON_AR=['يناير','فبراير','مارس','أبريل','مايو','يونيو','يوليو','أغسطس','سبتمبر','أكتوبر','نوفمبر','ديسمبر'];
+
+let db=null, auth=null;
+let state={depts:[], meetings:[], excuses:[], ready:false};
+let mode='view';            // 'view' أو معرّف القسم
+let calRef=new Date();      // شهر التقويم المعروض
+let mtgFilter='all';
+let pubFilter='all';
+let _seeded=false;
+
+/* ---------- منطق التواريخ والتعارض (مطابق للنسخة المُختبَرة) ---------- */
+function toISO(d){const y=d.getFullYear(),m=String(d.getMonth()+1).padStart(2,'0'),day=String(d.getDate()).padStart(2,'0');return `${y}-${m}-${day}`;}
+function parseDate(iso){const [y,m,d]=iso.split('-').map(Number);return new Date(y,m-1,d);}
+function toMin(t){const [h,m]=t.split(':').map(Number);return h*60+m;}
+function fmtTime(t){const [h,m]=t.split(':').map(Number);const ap=h<12?'ص':'م';let hh=h%12;if(hh===0)hh=12;return `${hh}:${String(m).padStart(2,'0')} ${ap}`;}
+function nthWeekdayOfMonth(y,mo,wd,n){const first=new Date(y,mo,1);let day=1+((wd-first.getDay()+7)%7);day+=(n-1)*7;const dt=new Date(y,mo,day);return dt.getMonth()===mo?dt:null;}
+function whichNthWeekday(d){return Math.floor((d.getDate()-1)/7)+1;}
+function expand(m,rs,re){
+  const out=[];const base=parseDate(m.date);const wd=base.getDay();
+  const push=dt=>{if(dt>=rs&&dt<=re)out.push({...m,_date:toISO(dt)});};
+  if(m.recurrence==='none'||!m.recurrence){push(base);}
+  else if(m.recurrence==='weekly'||m.recurrence==='biweekly'){
+    const step=m.recurrence==='weekly'?7:14;let cur=new Date(base);
+    if(cur<rs){const diff=Math.floor((rs-cur)/86400000);const jumps=Math.floor(diff/step);cur=new Date(base);cur.setDate(cur.getDate()+jumps*step);while(cur<rs)cur.setDate(cur.getDate()+step);}
+    for(let dt=new Date(cur);dt<=re;dt.setDate(dt.getDate()+step))push(new Date(dt));
+  } else if(m.recurrence==='monthly'){
+    const n=whichNthWeekday(base);let y=rs.getFullYear(),mo=rs.getMonth();const eY=re.getFullYear(),eM=re.getMonth();
+    while(y<eY||(y===eY&&mo<=eM)){const dt=nthWeekdayOfMonth(y,mo,wd,n);if(dt)push(dt);mo++;if(mo>11){mo=0;y++;}}
+  }
+  return out;
+}
+function calcNextFree(date,start,end){
+  const dur=toMin(end)-toMin(start);
+  const inst=instancesInRange(parseDate(date),parseDate(date)).filter(i=>i._date===date).sort((a,b)=>a.e-b.e);
+  if(!inst.length)return fmtTime(start);
+  const latest=Math.max(...inst.map(i=>i.e));
+  const free=latest+60; // ساعة بعد آخر اجتماع
+  const hh=Math.floor(free/60), mm=free%60;
+  return `${String(hh).padStart(2,'0')}:${String(mm).padStart(2,'0')}`;
+}
+function gap(a,b){if(a.s<b.e&&b.s<a.e)return 0;return Math.max(a.s,b.s)-Math.min(a.e,b.e);}
+function overlap(a,b){return gap(a,b)<60;} // فجوة أقل من ساعة = تعارض
+function instancesInRange(rs,re,list){let all=[];(list||state.meetings).forEach(m=>{all=all.concat(expand(m,rs,re));});return all.map(i=>({...i,s:toMin(i.start),e:toMin(i.end)}));}
+function getConflicts(rs,re){
+  const inst=instancesInRange(rs,re);const byDate={};
+  inst.forEach(i=>{(byDate[i._date]=byDate[i._date]||[]).push(i);});
+  const out=[];
+  Object.keys(byDate).forEach(date=>{const arr=byDate[date];for(let i=0;i<arr.length;i++)for(let j=i+1;j<arr.length;j++){if(overlap(arr[i],arr[j]))out.push([arr[i],arr[j]]);}});
+  return out;
+}
+function conflictKeySet(rs,re){const set=new Set();getConflicts(rs,re).forEach(([a,b])=>{set.add(a._date+'|'+a.id);set.add(b._date+'|'+b.id);});return set;}
+function checkSlot(date,start,end,excludeId){
+  const rs=parseDate(date),re=parseDate(date);
+  const inst=instancesInRange(rs,re).filter(i=>i._date===date&&i.id!==excludeId);
+  const s=toMin(start),e=toMin(end);
+  return inst.filter(i=>i.s<e&&s<i.e);
+}
+function dept(id){
+  if(id==='superadmin') return {id:'superadmin',name:'المسؤول العام',color:'#6B21A8',type:'superadmin'};
+  return state.depts.find(d=>d.id===id)||{name:'—',color:'#888'};
+}
+
+/* ---------- أنواع الكيانات ---------- */
+// council = مجلس الكلية · dept = قسم أكاديمي · program = إدارة البرنامج · committee = لجنة · superadmin = المسؤول العام
+function entType(d){ if(!d) return 'dept'; if(d.type) return d.type; if(isCouncil(d)) return 'council'; return 'dept'; }
+function entsByType(t){ return state.depts.filter(d=>entType(d)===t).sort((a,b)=>(a.order||0)-(b.order||0)); }
+function programEntity(){ return state.depts.find(d=>entType(d)==='program')||null; }
+function isManualPlace(deptId){ const t=entType(dept(deptId)); return t==='program'||t==='committee'; }
+// هل وضع المسؤول العام مفعّل؟
+function isSuperAdmin(){ return mode==='superadmin'; }
+
+/* ---------- ضمان وجود كيان المسؤول العام ---------- */
+let _superAdminChecked=false;
+function ensureSuperAdmin(){
+  if(_superAdminChecked) return;
+  if(state.depts.find(d=>d.id==='superadmin')){ _superAdminChecked=true; return; }
+  _superAdminChecked=true;
+  db.collection('departments').doc('superadmin').set(
+    {name:'المسؤول العام', color:'#6B21A8', pin:'1234', type:'superadmin', order:-1},
+    {merge:true}
+  ).catch(e=>console.error('ensureSuperAdmin',e));
+}
+
+/* ---------- منطق المكان ---------- */
+// هل القسم هو مجلس الكلية؟
+function isCouncil(d){return !!(d&&d.name&&(d.name.includes('مجلس الكلية')||d.name.includes('مجلس كلية')));}
+// نص القاعة الافتراضي حسب القسم
+function hallText(deptId){
+  const d=dept(deptId);
+  if(isManualPlace(deptId)) return '';
+  return isCouncil(d)
+    ? 'قاعة الاجتماعات في مبنى رقم 1 الدور الثاني'
+    : 'قاعة الاجتماعات في مبنى رقم 2 الدور الثاني';
+}
+// بناء خيارات قائمة المكان حسب نوع الكيان
+function setPlaceOptions(deptId){
+  const sel=document.getElementById('mtgPlace');
+  if(isManualPlace(deptId)){
+    sel.innerHTML='<option value="other">حضوري (تحديد المكان)</option><option value="remote">عن بُعد</option>';
+  } else {
+    sel.innerHTML='<option value="hall">قاعة الاجتماعات</option><option value="remote">عن بُعد</option><option value="other">أخرى (تحديد يدوي)</option>';
+  }
+}
+// تكوين نص المكان النهائي للحفظ، انطلاقاً من الحقول
+function buildPlaceText(deptId){
+  const kind=document.getElementById('mtgPlace').value;
+  if(kind==='hall'){ return hallText(deptId); }
+  if(kind==='remote'){
+    const link=document.getElementById('mtgRemote').value.trim();
+    return link ? ('عن بُعد — '+link) : 'عن بُعد';
+  }
+  // other / حضوري
+  return document.getElementById('mtgOther').value.trim();
+}
+// عند تغيير نوع المكان: إظهار/إخفاء الحقول المناسبة
+function onPlaceChange(){
+  const kind=document.getElementById('mtgPlace').value;
+  const remoteWrap=document.getElementById('mtgRemoteWrap');
+  const otherWrap=document.getElementById('mtgOtherWrap');
+  const hallHint=document.getElementById('mtgHallHint');
+  remoteWrap.classList.toggle('hide',kind!=='remote');
+  otherWrap.classList.toggle('hide',kind!=='other');
+  // تلميح القاعة
+  if(kind==='hall'){
+    const deptId=document.getElementById('mtgDept').value;
+    hallHint.textContent=hallText(deptId);
+    hallHint.style.display='block';
+  } else {
+    hallHint.textContent='';
+    hallHint.style.display='none';
+  }
+}
+// تفكيك نص مكان محفوظ لإعادة ضبط النموذج عند التعديل
+function applyPlaceToForm(note,deptId){
+  setPlaceOptions(deptId);
+  const sel=document.getElementById('mtgPlace');
+  const remote=document.getElementById('mtgRemote');
+  const other=document.getElementById('mtgOther');
+  remote.value=''; other.value='';
+  const txt=(note||'').trim();
+  const manual=isManualPlace(deptId);
+  if(!manual && (txt===hallText(deptId)||txt==='')){
+    sel.value='hall';
+  } else if(txt==='عن بُعد'||txt.startsWith('عن بُعد')){
+    sel.value='remote';
+    const link=txt.replace(/^عن بُعد\s*(—|-)?\s*/,'').trim();
+    if(link&&link!=='عن بُعد')remote.value=link;
+  } else {
+    sel.value='other';
+    other.value=txt;
+  }
+  onPlaceChange();
+}
+function hijri(iso){try{const d=parseDate(iso);return new Intl.DateTimeFormat('ar-SA-u-ca-islamic-umalqura',{day:'numeric',month:'long',year:'numeric'}).format(d)+' هـ';}catch(e){return '';}}
+function horizonRange(){const rs=new Date();rs.setHours(0,0,0,0);const re=new Date(rs);re.setMonth(re.getMonth()+3);return[rs,re];}
+
+/* ---------- تهيئة Firebase ---------- */
+function configMissing(){return !FIREBASE_CONFIG.apiKey||!FIREBASE_CONFIG.projectId;}
+
+function boot(){
+  if(configMissing()){showSetup();return;}
+  try{
+    firebase.initializeApp(FIREBASE_CONFIG);
+    db=firebase.firestore();
+    auth=firebase.auth();
+  }catch(e){showSetup('تعذّر تهيئة الاتصال. تأكد من صحة بيانات الإعداد التي لصقتها.');return;}
+  document.getElementById('app').classList.remove('hide');
+  document.getElementById('loadingScreen').classList.remove('hide');
+  document.getElementById('adminBtn').classList.remove('hide');
+  setConn('connecting');
+  auth.signInAnonymously()
+    .then(()=>{ setConn('live'); listen(); })
+    .catch(err=>{
+      console.error(err);
+      setConn('off');
+      document.getElementById('loadingScreen').innerHTML=
+        '<div style="max-width:520px;margin:0 auto;text-align:center">'+
+        '<div style="font-size:40px;margin-bottom:8px">🔑</div>'+
+        '<h3 style="color:var(--bad);font-family:var(--fh);margin-bottom:8px">يلزم تفعيل تسجيل الدخول المجهول</h3>'+
+        '<p style="color:var(--ink-soft);font-size:14px">من لوحة Firebase افتح <b>Authentication ← Sign-in method</b> وفعّل الطريقة المسماة <b>Anonymous</b> (مجهول)، ثم حدّث الصفحة.</p>'+
+        '<p style="color:var(--muted);font-size:12.5px;margin-top:10px">رمز الخطأ: '+(err.code||'')+'</p></div>';
+    });
+}
+function setConn(s){
+  const el=document.getElementById('connState'),t=document.getElementById('connTxt');
+  el.className='conn'+(s==='live'?' live':s==='off'?' off':'');
+  t.textContent=s==='live'?'متصل — التحديث مباشر':s==='off'?'غير متصل':'جارٍ الاتصال…';
+}
+
+/* ---------- الاستماع المباشر للبيانات ---------- */
+function listen(){
+  db.collection('departments').orderBy('order').onSnapshot(snap=>{
+    state.depts=snap.docs.map(d=>({id:d.id,...d.data()}));
+    if(state.depts.length===0 && !_seeded){ _seeded=true; seed(); return; }
+    ensureProgram();
+    ensureSuperAdmin();
+    state.ready=true;
+    document.getElementById('loadingScreen').classList.add('hide');
+    renderAll();
+    checkEmailPrompt();
+  },err=>{ onListenError(err); });
+
+  db.collection('meetings').onSnapshot(snap=>{
+    state.meetings=snap.docs.map(d=>({id:d.id,...d.data()}));
+    if(state.ready) renderAll();
+  },err=>{ onListenError(err); });
+
+  // الاعتذارات — آخر 90 يوم
+  db.collection('excuses').orderBy('createdAt','desc').onSnapshot(snap=>{
+    state.excuses=snap.docs.map(d=>({id:d.id,...d.data()}));
+    if(state.ready) renderMeetings();
+  },err=>{ console.warn('excuses listener:',err); });
+}
+function onListenError(err){
+  console.error(err);
+  setConn('off');
+  document.getElementById('loadingScreen').classList.remove('hide');
+  document.getElementById('loadingScreen').innerHTML=
+    '<div style="max-width:520px;margin:0 auto;text-align:center">'+
+    '<div style="font-size:40px;margin-bottom:8px">⚠️</div>'+
+    '<h3 style="color:var(--bad);font-family:var(--fh);margin-bottom:8px">تعذّر قراءة البيانات</h3>'+
+    '<p style="color:var(--ink-soft);font-size:14px">غالبًا قواعد الأمان (Rules) في Firestore تمنع الوصول. تأكد من لصق القواعد الموضّحة في خطوات الإعداد.</p>'+
+    '<p style="color:var(--muted);font-size:12.5px;margin-top:10px">رمز الخطأ: '+(err.code||'')+'</p></div>';
+}
+
+/* ---------- البذر الأولي (أول تشغيل فقط) ---------- */
+function seed(){
+  const batch=db.batch();
+  const names=['القسم الأول','القسم الثاني','القسم الثالث','القسم الرابع'];
+  const ids=[];
+  names.forEach((n,i)=>{
+    const ref=db.collection('departments').doc();
+    ids.push(ref.id);
+    batch.set(ref,{name:n,color:COLORS[i],pin:'1234',order:i});
+  });
+  // اجتماعان مثال (فيهما تعارض مقصود) — قابلان للحذف
+  const base=new Date();base.setDate(base.getDate()+ (7 - base.getDay())%7 + 1); // أقرب إثنين تقريبًا
+  const iso=toISO(base);
+  batch.set(db.collection('meetings').doc(),{deptId:ids[0],title:'اجتماع تجريبي — مجلس القسم',date:iso,start:'10:00',end:'11:30',recurrence:'none',note:'قاعة الاجتماعات في مبنى رقم 2 الدور الثاني',createdAt:Date.now()});
+  batch.set(db.collection('meetings').doc(),{deptId:ids[1],title:'اجتماع تجريبي — متعارِض',date:iso,start:'11:00',end:'12:00',recurrence:'none',note:'عن بُعد',createdAt:Date.now()});
+  batch.commit().catch(e=>console.error('seed',e));
+}
+/* ---------- ضمان وجود كيان إدارة البرنامج (ثابت) ---------- */
+let _programChecked=false;
+function ensureProgram(){
+  if(_programChecked) return;
+  _programChecked=true;
+  const existing=entsByType('program');
+  if(existing.length){
+    // تحديث اللون تلقائياً إذا كان القديم (#0E7C86 الأخضر)
+    if(existing[0].color==='#0E7C86'){
+      db.collection('departments').doc(existing[0].id).set({color:'#1B3B6F'},{merge:true})
+        .catch(e=>console.error('updateProgramColor',e));
+    }
+    return;
+  }
+  db.collection('departments').doc('program-main').set(
+    {name:'إدارة البرنامج', color:'#1B3B6F', pin:'1234', type:'program', order:90},
+    {merge:true}
+  ).catch(e=>console.error('ensureProgram',e));
+}
+/* ---------- التنقل بين التبويبات ---------- */
+function go(v){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('active',t.dataset.view===v));
+  document.querySelectorAll('.view').forEach(s=>s.classList.toggle('active',s.id==='view-'+v));
+  if(v==='check') setTimeout(runSlotCheck,30);
+}
+function renderAll(){
+  renderHome(); renderCalendar(); renderCheck(); renderMeetings(); renderDepts(); renderProgram(); renderCommittees(); renderPublic();
+  updateConflictBadge();
+  document.getElementById('footNote').textContent='منصّة تنسيق مجالس الأقسام · يُحدَّث مباشرةً لكل الأقسام';
+}
+function updateConflictBadge(){
+  const [rs,re]=horizonRange();
+  const n=getConflicts(rs,re).length;
+  document.querySelectorAll('.tab[data-view="home"]').forEach(t=>{
+    let b=t.querySelector('.badge'); 
+    if(n>0){ if(!b){b=document.createElement('span');b.className='badge';t.appendChild(b);} b.textContent=n; }
+    else if(b){ b.remove(); }
+  });
+}
+function esc(s){return (s||'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
+
+/* ---------- الرئيسية ---------- */
+function renderHome(){
+  const [rs,re]=horizonRange();
+  const inst=instancesInRange(rs,re).sort((a,b)=>a._date===b._date?a.s-b.s:(a._date<b._date?-1:1));
+  const conflicts=getConflicts(rs,re);
+  const monthCount=instancesInRange(rs,new Date(rs.getFullYear(),rs.getMonth()+1,0)).length;
+  let cfHtml='';
+  if(conflicts.length){
+    cfHtml='<div class="cf-alert"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 9v4m0 4h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg></div><div style="flex:1"><h4>تنبيه: يوجد '+conflicts.length+' تعارض في المواعيد القادمة</h4><div class="lst">';
+    conflicts.slice(0,6).forEach(([a,b])=>{
+      cfHtml+='<div class="cf-item">📅 <b>'+fmtDate(a._date)+'</b> — تعارض بين «'+esc(a.title)+'» ('+dept(a.deptId).name+'، '+fmtTime(a.start)+'–'+fmtTime(a.end)+') و«'+esc(b.title)+'» ('+dept(b.deptId).name+'، '+fmtTime(b.start)+'–'+fmtTime(b.end)+')</div>';
+    });
+    cfHtml+='</div></div></div>';
+  } else {
+    cfHtml='<div class="cf-ok"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></div><div><h4>لا توجد تعارضات</h4><p>جميع المواعيد في الأشهر الثلاثة القادمة متناسقة بدون تداخل.</p></div></div>';
+  }
+  let upcoming='';
+  const next=inst.slice(0,8);
+  if(next.length){
+    next.forEach(m=>{
+      const c=dept(m.deptId).color;const d=parseDate(m._date);
+      upcoming+='<div class="mtg"><div class="bar" style="background:'+c+'"></div>'+
+        '<div class="when"><div class="d">'+d.getDate()+'</div><div class="mo">'+MON_AR[d.getMonth()].slice(0,3)+'</div></div>'+
+        '<div class="body"><div class="t">'+esc(m.title)+'</div><div class="meta">'+
+        '<span class="dep"><i style="background:'+c+'"></i>'+dept(m.deptId).name+'</span>'+
+        '<span>🕐 '+fmtTime(m.start)+' – '+fmtTime(m.end)+'</span>'+
+        (m.note?'<span>📍 '+esc(m.note)+'</span>':'')+
+        '</div></div></div>';
+    });
+  } else {
+    upcoming='<div class="empty"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 2v4M16 2v4"/></svg><div>لا توجد اجتماعات قادمة</div></div>';
+  }
+  document.getElementById('view-home').innerHTML=
+    '<div class="page-head"><h2>لوحة المعلومات</h2><p>نظرة عامة على اجتماعات المجالس والتعارضات</p><div class="gold-rule"></div></div>'+
+    '<div class="grid g-3" style="margin-bottom:20px">'+
+      '<div class="stat"><div class="lab">الأقسام</div><div class="num">'+state.depts.filter(d=>entType(d)!=='superadmin').length+'</div><div class="sub">قسم مُسجَّل</div></div>'+
+      '<div class="stat is-gold"><div class="lab">اجتماعات هذا الشهر</div><div class="num">'+monthCount+'</div><div class="sub">خلال '+MON_AR[rs.getMonth()]+'</div></div>'+
+      '<div class="stat '+(conflicts.length?'is-bad':'')+'"><div class="lab">التعارضات القادمة</div><div class="num">'+conflicts.length+'</div><div class="sub">خلال 3 أشهر</div></div>'+
+    '</div>'+
+    cfHtml+
+    '<div class="card"><div class="card-h"><h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg> الاجتماعات القادمة</h3>'+
+      (mode!=='view'?'<button class="btn btn-primary btn-sm" onclick="openMtgForm()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 5v14M5 12h14"/></svg> اجتماع جديد</button>':'')+
+    '</div><div>'+upcoming+'</div></div>';
+}
+function fmtDate(iso){const d=parseDate(iso);return DOW_AR[d.getDay()]+' '+d.getDate()+' '+MON_AR[d.getMonth()];}
+
+/* ---------- التقويم ---------- */
+function renderCalendar(){
+  const y=calRef.getFullYear(),mo=calRef.getMonth();
+  const first=new Date(y,mo,1),startDow=first.getDay();
+  const daysInMonth=new Date(y,mo+1,0).getDate();
+  const rs=new Date(y,mo,1),re=new Date(y,mo,daysInMonth);
+  const inst=instancesInRange(rs,re);
+  const cfSet=conflictKeySet(rs,re);
+  const byDate={};inst.forEach(i=>{(byDate[i._date]=byDate[i._date]||[]).push(i);});
+  const todayISO=toISO(new Date());
+  let cells='';
+  // الأيام السابقة من الشهر الماضي (تعبئة)
+  const prevDays=startDow;
+  const prevMonthDays=new Date(y,mo,0).getDate();
+  for(let i=prevDays-1;i>=0;i--){cells+='<div class="cal-cell other"><div class="dn">'+(prevMonthDays-i)+'</div></div>';}
+  for(let d=1;d<=daysInMonth;d++){
+    const iso=toISO(new Date(y,mo,d));const wd=new Date(y,mo,d).getDay();
+    const evs=(byDate[iso]||[]).sort((a,b)=>a.s-b.s);
+    const isWk=(wd===5||wd===6);
+    let evHtml='';
+    evs.slice(0,3).forEach(e=>{const c=dept(e.deptId).color;const cf=cfSet.has(iso+'|'+e.id);
+      evHtml+='<div class="cev'+(cf?' cf':'')+'" style="background:'+c+'" onclick="quickView(\''+e.id+'\',\''+iso+'\')" title="'+esc(e.title)+' · '+fmtTime(e.start)+'">'+(cf?'<span class="wf"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"><path d="M12 8v5m0 3h.01"/></svg></span>':'')+'<span class="tx">'+esc(e.title)+'</span></div>';});
+    if(evs.length>3)evHtml+='<div style="font-size:10.5px;color:var(--muted);padding:0 5px">+'+(evs.length-3)+' أخرى</div>';
+    cells+='<div class="cal-cell'+(iso===todayISO?' today':'')+(isWk?' wknd':'')+'">'+
+      '<div class="dn"><span>'+d+'</span></div><div class="hijri">'+miniHijri(iso)+'</div>'+evHtml+'</div>';
+  }
+  document.getElementById('view-calendar').innerHTML=
+    '<div class="page-head"><h2>التقويم الشهري</h2><p>كل اجتماعات الأقسام في مكان واحد — التعارض مُعلَّم بإطار أحمر</p><div class="gold-rule"></div></div>'+
+    '<div class="card card-pad">'+
+    '<div class="cal-head"><div class="cal-nav"><button class="nav-btn" onclick="calMove(-1)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 6 6 6-6 6"/></svg></button>'+
+      '<div class="cal-title"><span class="cal-greg">'+MON_AR[mo]+' '+y+'</span><span class="cal-hijri-sub">'+hijriMonthLabel(y,mo)+'</span></div>'+
+      '<button class="nav-btn" onclick="calMove(1)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m15 6-6 6 6 6"/></svg></button></div>'+
+      '<button class="btn btn-ghost btn-sm" onclick="calToday()">اليوم</button></div>'+
+    '<div class="cal-grid">'+DOW_AR.map(d=>'<div class="cal-dow">'+d.slice(0,3)+'</div>').join('')+cells+'</div>'+
+    '<div style="display:flex;gap:16px;flex-wrap:wrap;margin-top:16px;padding-top:14px;border-top:1px solid var(--line)">'+
+      state.depts.filter(d=>entType(d)!=='superadmin').map(d=>'<span style="display:inline-flex;align-items:center;gap:6px;font-size:13px;color:var(--ink-soft)"><i style="width:11px;height:11px;border-radius:3px;background:'+d.color+';display:inline-block"></i>'+esc(d.name)+'</span>').join('')+
+    '</div></div>';
+}
+function miniHijri(iso){try{const d=parseDate(iso);const p=new Intl.DateTimeFormat('en-US-u-ca-islamic-umalqura',{day:'numeric'}).format(d);return p;}catch(e){return '';}}
+// الشهر/السنة الهجرية لعنوان التقويم — يعرض شهراً واحداً أو شهرين إذا امتد الشهر الميلادي عليهما
+function hijriMonthLabel(y,mo){
+  try{
+    const mFmt=new Intl.DateTimeFormat('ar-SA-u-ca-islamic-umalqura',{month:'long'});
+    const yNum=d=>{const parts=new Intl.DateTimeFormat('en-US-u-ca-islamic-umalqura',{year:'numeric'}).formatToParts(d);const p=parts.find(x=>x.type==='year');return p?p.value:'';};
+    const dS=new Date(y,mo,1), dE=new Date(y,mo+1,0);
+    const sM=mFmt.format(dS), eM=mFmt.format(dE);
+    const sY=yNum(dS), eY=yNum(dE);
+    if(sM===eM && sY===eY) return sM+' '+sY+' هـ';
+    if(sY===eY) return sM+' – '+eM+' '+eY+' هـ';
+    return sM+' '+sY+' – '+eM+' '+eY+' هـ';
+  }catch(e){return '';}
+}
+function calMove(n){calRef=new Date(calRef.getFullYear(),calRef.getMonth()+n,1);renderCalendar();}
+function calToday(){calRef=new Date();renderCalendar();}
+
+/* ---------- فحص الموعد ---------- */
+function renderCheck(){
+  const today=toISO(new Date());
+  const el=document.getElementById('view-check');
+  if(el.dataset.built==='1'){ return; }
+  el.dataset.built='1';
+  el.innerHTML=
+    '<div class="page-head"><h2>فحص توفّر موعد</h2><p>اختر التاريخ والوقت لتعرف فورًا: متاح أم متعارض</p><div class="gold-rule"></div></div>'+
+    '<div class="grid g-2">'+
+      '<div class="card card-pad">'+
+        '<div class="field"><label>التاريخ</label><input type="date" id="ckDate" value="'+today+'" onchange="runSlotCheck()"><div class="hint" id="ckHijri"></div></div>'+
+        '<div class="two"><div class="field"><label>من الساعة</label><input type="time" id="ckStart" value="10:00" onchange="runSlotCheck()"></div>'+
+        '<div class="field"><label>إلى الساعة</label><input type="time" id="ckEnd" value="11:00" onchange="runSlotCheck()"></div></div>'+
+        '<div id="ckResult"></div>'+
+      '</div>'+
+      '<div class="card card-pad"><div id="ckDay"></div></div>'+
+    '</div>';
+  runSlotCheck();
+}
+function runSlotCheck(){
+  const dEl=document.getElementById('ckDate');if(!dEl)return;
+  const date=dEl.value,start=document.getElementById('ckStart').value,end=document.getElementById('ckEnd').value;
+  const hj=document.getElementById('ckHijri');if(hj)hj.textContent=date?hijri(date):'';
+  const res=document.getElementById('ckResult'),dayEl=document.getElementById('ckDay');
+  if(!date||!start||!end){res.innerHTML='';dayEl.innerHTML='';return;}
+  if(toMin(end)<=toMin(start)){res.innerHTML='<div class="slot-res busy" style="padding:14px"><p style="color:var(--bad)">وقت النهاية يجب أن يكون بعد وقت البداية.</p></div>';return;}
+  const clashes=checkSlot(date,start,end);
+  const canBook=(mode!=='view');
+  if(clashes.length===0){
+    res.innerHTML='<div class="slot-res free"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></div><h3>الموعد متاح ✅</h3><p>لا يوجد أي تعارض، والفجوة لا تقل عن ساعة مع جميع اجتماعات الأقسام في هذا اليوم.</p>'+
+      (canBook?'<button class="btn btn-primary" style="margin-top:14px" onclick="bookFromCheck()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 5v14M5 12h14"/></svg> احجز هذا الموعد لقسمك</button>':'<p style="margin-top:12px;font-size:12.5px;color:var(--muted)">للحجز، ادخل وضع إدارة قسمك من الأعلى.</p>')+'</div>';
+  } else {
+    let det='';
+    clashes.forEach(c=>{
+      const g=gap({s:toMin(start),e:toMin(end)},{s:c.s,e:c.e});
+      const clash=g===0;
+      det+=`<div class="cf-item" style="margin-top:6px">
+        ${clash?'⛔':'⚠️'} <b>${dept(c.deptId).name}</b> — «${esc(c.title)}» (${fmtTime(c.start)} – ${fmtTime(c.end)})
+        <span style="float:left;font-size:11.5px;color:var(--bad)">${clash?'تداخل مباشر':'فجوة '+g+' د. فقط (أقل من ساعة)'}</span>
+      </div>`;
+    });
+    res.innerHTML=`<div class="slot-res busy"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg></div>
+      <h3>الموعد غير متاح ⚠️</h3>
+      <p>الفجوة الزمنية مع ${clashes.length===1?'اجتماع قسم آخر':'اجتماعات أقسام أخرى'} أقل من ساعة:</p>
+      <div style="margin-top:10px;text-align:right">${det}</div>
+      <p style="margin-top:12px;font-size:12.5px;color:var(--bad)">لضمان فجوة ساعة كاملة، احجز بعد ${calcNextFree(date,start,end)} على الأقل.</p>
+    </div>`;
+  }
+  // جدول اليوم
+  const inst=instancesInRange(parseDate(date),parseDate(date)).filter(i=>i._date===date).sort((a,b)=>a.s-b.s);
+  let dh='<div class="dh"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="var(--brand)" stroke-width="1.8"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 2v4M16 2v4"/></svg> جدول يوم '+fmtDate(date)+'</div>';
+  if(inst.length===0){dh+='<div class="empty" style="padding:30px"><div>لا توجد اجتماعات محجوزة في هذا اليوم</div></div>';}
+  else{inst.forEach(i=>{const c=dept(i.deptId).color;dh+='<div class="day-item"><i style="background:'+c+'"></i><div><div style="font-weight:600">'+esc(i.title)+'</div><div style="font-size:12px;color:var(--ink-soft)">'+dept(i.deptId).name+'</div></div><span class="tm">'+fmtTime(i.start)+' – '+fmtTime(i.end)+'</span></div>';});}
+  dayEl.innerHTML=dh;
+}
+function bookFromCheck(){
+  openMtgForm();
+  document.getElementById('mtgDate').value=document.getElementById('ckDate').value;
+  document.getElementById('mtgStart').value=document.getElementById('ckStart').value;
+  document.getElementById('mtgEnd').value=document.getElementById('ckEnd').value;
+  updateMtgHijri();liveMtgCheck();
+}
+/* ---------- قائمة الاجتماعات ---------- */
+function renderMeetings(){
+  const [rs,re]=horizonRange();
+  const cfSet=conflictKeySet(rs,re);
+  const searchQ=(document.getElementById('mtgSearchInput')||{value:''}).value.toLowerCase().trim();
+  let list=state.meetings.slice().sort((a,b)=> (a.date===b.date? toMin(a.start)-toMin(b.start) : (a.date<b.date?-1:1)));
+  if(mtgFilter!=='all') list=list.filter(m=>m.deptId===mtgFilter);
+  if(searchQ) list=list.filter(m=>
+    (m.title||'').toLowerCase().includes(searchQ)||
+    (dept(m.deptId).name||'').toLowerCase().includes(searchQ)||
+    (m.date||'').includes(searchQ)||
+    (m.note||'').toLowerCase().includes(searchQ)
+  );
+  let filters='<button class="fbtn'+(mtgFilter==='all'?' active':'')+'" onclick="setFilter(\'all\')">كل الأقسام</button>';
+  state.depts.filter(d=>entType(d)!=='superadmin').forEach(d=>{filters+='<button class="fbtn'+(mtgFilter===d.id?' active':'')+'" onclick="setFilter(\''+d.id+'\')"><i style="display:inline-block;width:8px;height:8px;border-radius:50%;background:'+d.color+';margin-inline-end:5px"></i>'+esc(d.name)+'</button>';});
+
+  let rows='';
+  if(list.length){
+    list.forEach(m=>{
+      const c=dept(m.deptId).color;const editable=(mode===m.deptId||isSuperAdmin());
+      // هل لهذا الاجتماع تعارض في أي ظهور قادم؟
+      let hasCf=false;const insts=expand(m,rs,re);for(const ins of insts){if(cfSet.has(ins._date+'|'+m.id)){hasCf=true;break;}}
+      rows+='<tr><td class="cell-mtg-title" data-label="الاجتماع"><div style="font-weight:600">'+esc(m.title)+(hasCf?' <span class="chip cf">تعارض</span>':'')+'</div></td>'+
+        '<td data-label="القسم"><span class="dep-tag"><i style="background:'+c+'"></i>'+dept(m.deptId).name+'</span></td>'+
+        '<td data-label="التاريخ" style="white-space:nowrap">'+fmtDate(m.date)+'<div style="font-size:11px;color:var(--muted)">'+hijri(m.date)+'</div></td>'+
+        '<td data-label="الوقت" style="white-space:nowrap;font-variant-numeric:tabular-nums">'+fmtTime(m.start)+'<br>'+fmtTime(m.end)+'</td>'+
+        '<td data-label="المكان"><span style="font-size:12.5px;color:var(--ink-soft)">'+(m.note?esc(m.note):'—')+'</span></td>'+
+        '<td class="cell-mtg-actions">'+(editable?'<div class="row-actions"><button class="ico-btn" onclick="openMtgForm(\''+m.id+'\')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg></button>'+
+          '<button class="ico-btn danger" onclick="openMtgForm(\''+m.id+'\',true)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14"/></svg></button></div>'
+          :'<span style="font-size:12px;color:var(--muted)">—</span>')+'</td></tr>';
+    });
+  } else {
+    rows='<tr><td colspan="6"><div class="empty"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 6h13M8 12h13M8 18h13"/><circle cx="3.5" cy="6" r="1.3"/><circle cx="3.5" cy="12" r="1.3"/><circle cx="3.5" cy="18" r="1.3"/></svg><div>لا توجد اجتماعات</div></div></td></tr>';
+  }
+  // === الأرشيف: الاجتماعات السابقة ===
+  const today=toISO(new Date());
+  const past=state.meetings.filter(m=>m.date<today)
+    .sort((a,b)=>(a.date<b.date?1:-1)); // الأحدث أولاً
+  const pastFilter=mtgFilter==='all'?past:past.filter(m=>m.deptId===mtgFilter);
+  const pastSearch=searchQ?pastFilter.filter(m=>(m.title||'').toLowerCase().includes(searchQ)||(dept(m.deptId).name||'').toLowerCase().includes(searchQ)):pastFilter;
+  let archiveRows='';
+  pastSearch.slice(0,20).forEach(m=>{
+    const c=dept(m.deptId).color;const editable=(mode===m.deptId||isSuperAdmin());
+    archiveRows+='<tr style="opacity:.75"><td class="cell-mtg-title" data-label="الاجتماع"><div style="font-weight:600">'+esc(m.title)+'</div></td>'+
+      '<td data-label="القسم"><span class="dep-tag"><i style="background:'+c+'"></i>'+dept(m.deptId).name+'</span></td>'+
+      '<td data-label="التاريخ" style="white-space:nowrap">'+fmtDate(m.date)+'<div style="font-size:11px;color:var(--muted)">'+hijri(m.date)+'</div></td>'+
+      '<td data-label="الوقت" style="white-space:nowrap;font-variant-numeric:tabular-nums">'+fmtTime(m.start)+'<br>'+fmtTime(m.end)+'</td>'+
+      '<td data-label="المكان"><span style="font-size:12.5px;color:var(--ink-soft)">'+(m.note?esc(m.note):'—')+'</span></td>'+
+      '<td class="cell-mtg-actions">'+(editable?'<div class="row-actions"><button class="ico-btn" onclick="openMtgForm(\''+m.id+'\')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg></button>'+
+        '<button class="ico-btn danger" onclick="openMtgForm(\''+m.id+'\',true)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14"/></svg></button></div>':'<span style="font-size:12px;color:var(--muted)">—</span>')+'</td></tr>';
+  });
+  const archiveSection = pastSearch.length ? `
+    <div style="margin-top:28px">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
+        <div style="width:4px;height:24px;background:var(--muted);border-radius:2px"></div>
+        <h3 style="font-size:16px;color:var(--ink-soft)">أرشيف الاجتماعات السابقة</h3>
+        <span style="font-size:12px;color:var(--muted);background:var(--surface);border:1px solid var(--line);padding:2px 10px;border-radius:20px">${pastSearch.length} اجتماع</span>
+      </div>
+      <div class="card" style="overflow:auto;opacity:.9">
+        <table class="tbl tbl-meetings"><thead><tr><th>الاجتماع</th><th>القسم</th><th>التاريخ</th><th>الوقت</th><th>المكان</th><th></th></tr></thead>
+        <tbody>${archiveRows}${pastSearch.length>20?'<tr><td colspan="6" style="text-align:center;color:var(--muted);padding:12px;font-size:13px">... و '+(pastSearch.length-20)+' اجتماع أقدم</td></tr>':''}</tbody></table>
+      </div>
+    </div>` : '';
+
+  document.getElementById('view-meetings').innerHTML=
+    '<div class="page-head"><h2>سجلّ الاجتماعات</h2><p>جميع اجتماعات المجالس المسجَّلة'+(mode!=='view'?' — أنت تدير اجتماعات «'+dept(mode).name+'»':'')+'</p><div class="gold-rule"></div></div>'+
+    // حقل البحث
+    '<div class="field" style="margin-bottom:14px"><div style="position:relative"><svg style="position:absolute;right:13px;top:50%;transform:translateY(-50%);color:var(--muted)" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg><input id="mtgSearchInput" type="text" placeholder="ابحث باسم الاجتماع أو القسم أو التاريخ..." style="padding-right:38px;width:100%;max-width:100%;box-sizing:border-box;padding:11px 38px 11px 13px;border:1px solid var(--line-d);border-radius:10px;font-family:var(--ff);font-size:14.5px;background:#fff;color:var(--ink)" oninput="renderMeetings()"></div></div>'+
+    '<div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:8px"><div class="filter-bar" style="margin:0">'+filters+'</div>'+
+      '<div style="display:flex;gap:8px;align-items:center">'+
+      '<button class="btn btn-ghost btn-sm" onclick="printMeetings()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" width="16" height="16"><path d="M6 9V2h12v7"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg> طباعة</button>'+
+      (mode!=='view'?'<button class="btn btn-primary btn-sm" onclick="openMtgForm()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 5v14M5 12h14"/></svg> اجتماع جديد</button>':'')+
+      '</div></div>'+
+    '<div class="card" style="overflow:auto"><table class="tbl tbl-meetings"><thead><tr><th>الاجتماع</th><th>القسم</th><th>التاريخ</th><th>الوقت</th><th>المكان</th><th></th></tr></thead><tbody>'+rows+'</tbody></table></div>'+
+    archiveSection+
+    renderExcusesPanel();
+}
+function setFilter(f){mtgFilter=f;renderMeetings();}
+function setPubFilter(f){pubFilter=f;renderPublic();}
+
+/* ---------- الأقسام ---------- */
+function getDeptIcon(name){
+  const n=name||'';
+  // مجلس الكلية
+  if(n.includes('مجلس'))return`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/><path d="M6 11h4M6 15h4M14 11h4M14 15h4"/></svg>`;
+  // الجوي والبحري — طائرة (يجب أن يكون قبل إسعاف)
+  if(n.includes('جوي')||n.includes('بحري'))return`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.15 12a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.06 1h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.09 8.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 21 16z"/><path d="M16 2s2 2 2 5M19 5l3-3"/></svg>`;
+  // الخدمات الإسعافية — صليب طبي واضح
+  if(n.includes('إسعاف')||n.includes('اسعاف')||n.includes('إسعافية'))return`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2h8v4H8zM4 6h16v2H4zM2 8h20v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2z"/><path d="M12 12v6M9 15h6"/></svg>`;
+  // العلوم الأساسية — كتاب
+  if(n.includes('علوم')||n.includes('أساسية'))return`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/><path d="M8 7h8M8 11h6"/></svg>`;
+  // الحوادث والإصابات — نبضة قلب
+  if(n.includes('حوادث')||n.includes('إصابات')||n.includes('اصابات'))return`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>`;
+  return`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9M15 21V9"/></svg>`;
+}
+
+function renderDepts(){
+  const council=state.depts.find(d=>entType(d)==='council');
+  const depts=entsByType('dept').filter(d=>entType(d)!=='superadmin');
+
+  // بطاقة مجلس الكلية
+  let councilHtml='';
+  if(council){
+    const cnt=state.meetings.filter(m=>m.deptId===council.id).length;
+    const editable=(mode===council.id||isSuperAdmin());
+    councilHtml=`
+    <div style="margin-bottom:28px">
+      <div class="council-card" style="background:linear-gradient(135deg,var(--brand-d),var(--brand));border-radius:var(--radius);padding:24px 28px;color:#fff;display:flex;align-items:center;gap:22px;flex-wrap:wrap;box-shadow:var(--shadow-lg);position:relative;overflow:hidden">
+        <div style="position:absolute;inset:0;background-image:radial-gradient(circle at 1px 1px,rgba(255,255,255,.05) 1px,transparent 0);background-size:20px 20px;pointer-events:none"></div>
+        <div class="council-ic" style="width:72px;height:72px;border-radius:18px;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.25);display:grid;place-items:center;flex:0 0 auto;color:#fff">
+          <svg viewBox="0 0 24 24" width="36" height="36" fill="none" stroke="#fff" stroke-width="1.5" stroke-linecap="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/><path d="M6 11h4M6 15h4M14 11h4M14 15h4"/></svg>
+        </div>
+        <div class="council-info" style="flex:1;min-width:0;position:relative;text-align:center">
+          <div style="font-size:12px;opacity:.75;font-weight:500;letter-spacing:.5px;text-transform:uppercase;margin-bottom:4px">المجلس الأعلى</div>
+          <div class="council-name" style="font-family:var(--fh);font-size:24px;font-weight:700">${esc(council.name)}</div>
+          <div style="font-size:13px;opacity:.8;margin-top:4px">${cnt} اجتماع مُسجَّل</div>
+        </div>
+        <div class="council-actions" style="display:flex;gap:10px;flex-wrap:wrap;position:relative">
+          ${editable
+            ?`<button class="btn" style="background:rgba(255,255,255,.2);color:#fff;border:1px solid rgba(255,255,255,.3);gap:7px" onclick="openDeptEdit('${council.id}')"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg>تعديل</button>
+             <button class="btn btn-primary" style="background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3)" onclick="openMtgForm()"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 5v14M5 12h14"/></svg>إضافة اجتماع</button>`
+            :`<button class="btn" style="background:rgba(255,255,255,.12);color:rgba(255,255,255,.9);border:1px solid rgba(255,255,255,.2);font-size:13px" onclick="openAdminLogin()"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>دخول الموظفين</button>`
+          }
+        </div>
+      </div>
+    </div>`;
+  }
+
+  // بطاقات الأقسام الأربعة
+  let cards='';
+  depts.forEach(d=>{
+    const cnt=state.meetings.filter(m=>m.deptId===d.id).length;
+    const editable=(mode===d.id||isSuperAdmin());
+    cards+=`
+    <div style="background:#fff;border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden;display:flex;flex-direction:column">
+      <div style="height:5px;background:${d.color}"></div>
+      <div style="padding:22px 20px;flex:1;display:flex;flex-direction:column;align-items:center;text-align:center;gap:12px">
+        <div style="width:64px;height:64px;border-radius:16px;background:${d.color}18;border:1.5px solid ${d.color}40;display:grid;place-items:center;color:${d.color}">
+          ${getDeptIcon(d.name)}
+        </div>
+        <div>
+          <div style="font-family:var(--fh);font-size:16px;font-weight:700;color:var(--ink)">${esc(d.name)}</div>
+          <div style="font-size:13px;color:var(--muted);margin-top:4px">${cnt} اجتماع مُسجَّل</div>
+        </div>
+        <div style="margin-top:auto;display:flex;flex-direction:column;gap:8px;width:100%">
+          ${editable
+            ?`<button class="btn btn-primary btn-sm btn-block" onclick="openMtgForm()"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 5v14M5 12h14"/></svg>إضافة اجتماع</button>
+               <button class="btn btn-ghost btn-sm btn-block" onclick="openDeptEdit('${d.id}')"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg>تعديل بيانات القسم</button>`
+            :`<button class="btn btn-ghost btn-sm btn-block" onclick="openAdminLogin()" style="color:var(--brand)"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>دخول الموظفين</button>`
+          }
+        </div>
+      </div>
+    </div>`;
+  });
+
+  document.getElementById('view-depts').innerHTML=
+    `<div class="page-head"><h2>مجلس الكلية والأقسام الأكاديمية</h2><p>إدارة مواعيد المجلس الأعلى والأقسام الأربعة</p><div class="gold-rule"></div></div>`+
+    councilHtml+
+    `<div style="display:flex;align-items:center;gap:10px;margin-bottom:16px">
+      <div style="width:4px;height:26px;background:var(--brand);border-radius:2px"></div>
+      <h3 style="font-size:17px;color:var(--brand-d)">الأقسام الأكاديمية الأربعة</h3>
+    </div>`+
+    `<div class="grid g-2">${cards}</div>`;
+}
+
+/* ---------- اجتماعات كيان (قائمة مصغّرة) ---------- */
+function entMeetingCards(entId, editable){
+  const [rs,re]=horizonRange();
+  const list=instancesInRange(rs,re,state.meetings.filter(m=>m.deptId===entId))
+    .sort((a,b)=>a._date===b._date?a.s-b.s:(a._date<b._date?-1:1));
+  if(!list.length) return '<div style="text-align:center;color:var(--muted);padding:20px;font-size:13.5px;border:1px dashed var(--line);border-radius:12px">لا توجد اجتماعات قادمة خلال الأشهر الثلاثة القادمة</div>';
+  let h='';
+  list.forEach(m=>{
+    const dt=parseDate(m._date);
+    h+=`<div style="border:1px solid var(--line);border-radius:12px;margin-bottom:10px;background:#fff;overflow:hidden">
+      <div style="display:flex;align-items:center;gap:12px;padding:12px 14px">
+        <div style="flex:1;min-width:0">
+          <div style="font-weight:600;font-size:14.5px;color:var(--ink)">${esc(m.title)}</div>
+          <div style="font-size:12.5px;color:var(--ink-soft);margin-top:4px">${DOW_AR[dt.getDay()]} ${dt.getDate()} ${MON_AR[dt.getMonth()]} ${dt.getFullYear()} · <bdi>${fmtTime(m.start)}</bdi> وحتى الساعة <bdi>${fmtTime(m.end)}</bdi></div>
+          <div style="font-size:12.5px;color:var(--muted);margin-top:3px">📍 ${m.note?esc(m.note):'—'}</div>
+        </div>
+        ${editable?`<div style="display:flex;gap:7px;flex:0 0 auto">
+          <button class="ico-btn" onclick="openMtgForm('${m.id}')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg></button>
+          <button class="ico-btn danger" onclick="openMtgForm('${m.id}',true)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14"/></svg></button>
+        </div>`:''}
+      </div>
+      <div style="display:flex;gap:8px;padding:8px 14px 12px;border-top:1px solid var(--line);background:var(--surface)">
+        <button class="pub-btn cal" onclick="addToCalendar('${m.id}','${m._date}')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 2v4M16 2v4M12 13v4M10 15h4"/></svg>
+          أضف للتقويم
+        </button>
+        <button class="pub-btn mail" onclick="emailMeeting('${m.id}','${m._date}')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg>
+          إرسال بالبريد
+        </button>
+      </div>
+    </div>`;
+  });
+  return h;
+}
+
+/* ---------- صفحة إدارة البرنامج ---------- */
+function renderProgram(){
+  const el=document.getElementById('view-program'); if(!el) return;
+  const prog=programEntity();
+  if(!prog){
+    el.innerHTML=`<div class="page-head"><h2>إدارة البرنامج</h2><div class="gold-rule"></div></div><div class="card card-pad" style="text-align:center;color:var(--muted);padding:40px">جارٍ تهيئة قسم إدارة البرنامج…</div>`;
+    return;
+  }
+  const editable=(mode===prog.id||isSuperAdmin());
+  const cnt=state.meetings.filter(m=>m.deptId===prog.id).length;
+  const col=prog.color||'#0E7C86';
+  el.innerHTML=`
+    <div class="page-head"><h2>إدارة البرنامج</h2><p>اجتماعات إدارة البرنامج — جهة مستقلة</p><div class="gold-rule"></div></div>
+    <div style="margin-bottom:26px">
+      <div class="council-card" style="background:linear-gradient(135deg,${col},${shade(col,-18)});border-radius:var(--radius);padding:24px 28px;color:#fff;display:flex;align-items:center;gap:22px;flex-wrap:wrap;box-shadow:var(--shadow-lg);position:relative;overflow:hidden">
+        <div style="position:absolute;inset:0;background-image:radial-gradient(circle at 1px 1px,rgba(255,255,255,.05) 1px,transparent 0);background-size:20px 20px;pointer-events:none"></div>
+        <div class="council-ic" style="width:72px;height:72px;border-radius:18px;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.25);display:grid;place-items:center;flex:0 0 auto;color:#fff">
+          <svg viewBox="0 0 24 24" width="34" height="34" fill="none" stroke="#fff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M9 7h6M9 11h6M9 15h3"/></svg>
+        </div>
+        <div class="council-info" style="flex:1;min-width:0;position:relative;text-align:center">
+          <div style="font-size:12px;opacity:.75;font-weight:500;letter-spacing:.5px;margin-bottom:4px">جهة إدارية</div>
+          <div class="council-name" style="font-family:var(--fh);font-size:24px;font-weight:700">${esc(prog.name)}</div>
+          <div style="font-size:13px;opacity:.8;margin-top:4px">${cnt} اجتماع مُسجَّل</div>
+        </div>
+        <div class="council-actions" style="display:flex;gap:10px;flex-wrap:wrap;position:relative">
+          ${editable
+            ?`<button class="btn" style="background:rgba(255,255,255,.2);color:#fff;border:1px solid rgba(255,255,255,.3);gap:7px" onclick="openDeptEdit('${prog.id}')"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg>تعديل</button>
+             <button class="btn btn-primary" style="background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3)" onclick="openMtgForm()"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 5v14M5 12h14"/></svg>إضافة اجتماع</button>`
+            :`<button class="btn" style="background:rgba(255,255,255,.12);color:rgba(255,255,255,.9);border:1px solid rgba(255,255,255,.2);font-size:13px" onclick="openAdminLogin('${prog.id}')"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>دخول الموظفين</button>`
+          }
+        </div>
+      </div>
+    </div>
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px">
+      <div style="width:4px;height:26px;background:${col};border-radius:2px"></div>
+      <h3 style="font-size:17px;color:${col}">الاجتماعات القادمة لإدارة البرنامج</h3>
+    </div>
+    ${entMeetingCards(prog.id, editable)}`;
+}
+
+/* ---------- صفحة اجتماعات اللجان ---------- */
+function renderCommittees(){
+  const el=document.getElementById('view-committees'); if(!el) return;
+  const prog=programEntity();
+  const isManager=(prog && mode===prog.id);
+  const committees=entsByType('committee');
+
+  // شريط الإضافة العلوي
+  const addBar=`<div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:20px">
+    <div style="font-size:13.5px;color:var(--ink-soft)">${committees.length} لجنة مُسجَّلة</div>
+    ${isManager
+      ?`<button class="btn btn-primary btn-sm" onclick="openAddCommittee()"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 5v14M5 12h14"/></svg>إضافة لجنة جديدة</button>`
+      :`<button class="btn btn-ghost btn-sm" onclick="openAdminLogin('${prog?prog.id:''}')" style="color:var(--brand)"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>دخول المدير لإضافة/إدارة اللجان</button>`}
+  </div>`;
+
+  let cards='';
+  committees.forEach(c=>{
+    const editable=(mode===c.id||isSuperAdmin());
+    const cnt=state.meetings.filter(m=>m.deptId===c.id).length;
+    const col=c.color||'#5A6270';
+    cards+=`
+    <div style="background:#fff;border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden;margin-bottom:18px">
+      <div style="height:5px;background:${col}"></div>
+      <div style="padding:18px 20px">
+        <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap">
+          <div style="width:50px;height:50px;border-radius:13px;background:${col}18;border:1.5px solid ${col}40;display:grid;place-items:center;flex:0 0 auto;color:${col}">
+            <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3"/><path d="M3 19c0-3 2.7-5 6-5s6 2 6 5"/><path d="M16 5a3 3 0 0 1 0 6"/></svg>
+          </div>
+          <div style="flex:1;min-width:0">
+            <div style="font-family:var(--fh);font-size:17px;font-weight:700;color:var(--ink)">${esc(c.name)}</div>
+            <div style="font-size:12.5px;color:var(--muted);margin-top:3px">${cnt} اجتماع مُسجَّل</div>
+          </div>
+          ${isManager?`<div style="display:flex;gap:7px;flex:0 0 auto">
+            <button class="ico-btn" title="تعديل بيانات اللجنة" onclick="openDeptEdit('${c.id}')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg></button>
+            <button class="ico-btn danger" title="حذف اللجنة" onclick="deleteCommittee('${c.id}')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14"/></svg></button>
+          </div>`:''}
+        </div>
+        <div style="margin-top:16px">
+          ${editable
+            ?`<button class="btn btn-primary btn-sm" style="margin-bottom:14px" onclick="openMtgForm()"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 5v14M5 12h14"/></svg>إضافة اجتماع لهذه اللجنة</button>
+               ${entMeetingCards(c.id,true)}`
+            :`<button class="btn btn-ghost btn-sm btn-block" onclick="openAdminLogin('${c.id}')" style="color:var(--brand)"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>دخول موظف اللجنة</button>`}
+        </div>
+      </div>
+    </div>`;
+  });
+  if(!committees.length){
+    cards=`<div class="card card-pad" style="text-align:center;color:var(--muted);padding:42px">لا توجد لجان مُسجَّلة بعد${isManager?' — اضغط «إضافة لجنة جديدة» لإنشاء أول لجنة':' — يضيفها مدير المنصة'}</div>`;
+  }
+
+  el.innerHTML=`<div class="page-head"><h2>اجتماعات اللجان</h2><p>اللجان المؤقتة والدائمة — لكل لجنة موظف مسؤول برمز خاص</p><div class="gold-rule"></div></div>${addBar}${cards}`;
+}
+// تظليل لون (موجب يفتح، سالب يغمّق)
+function shade(hex,pct){
+  try{
+    const n=parseInt(hex.slice(1),16);let r=(n>>16)&255,g=(n>>8)&255,b=n&255;
+    const f=pct/100;
+    r=Math.round(r+(pct<0?r:255-r)*f);g=Math.round(g+(pct<0?g:255-g)*f);b=Math.round(b+(pct<0?b:255-b)*f);
+    return '#'+((1<<24)+(r<<16)+(g<<8)+b).toString(16).slice(1);
+  }catch(e){return hex;}
+}
+
+
+
+/* ---------- وضع الإدارة + رمز PIN ---------- */
+function openAdminLogin(preId){
+  const sel=document.getElementById('adminDept');
+  const ord={council:0,dept:1,program:2,committee:3};
+  // استثناء superadmin من القائمة العادية لأنه سيُضاف ثابتاً أولاً
+  const sorted=state.depts.filter(d=>entType(d)!=='superadmin')
+    .slice().sort((a,b)=>(ord[entType(a)]-ord[entType(b)])||((a.order||0)-(b.order||0)));
+  // المسؤول العام دائماً أول القائمة بغض النظر عن Firebase
+  sel.innerHTML='<option value="superadmin">🔑 المسؤول العام — صلاحية كاملة</option>'+
+    sorted.map(d=>'<option value="'+d.id+'">'+esc(d.name)+'</option>').join('');
+  if(preId) sel.value=preId;
+  document.querySelectorAll('#pinRow input').forEach(i=>i.value='');
+  document.getElementById('pinErr').classList.remove('show');
+  openOv('ovAdmin');
+  setTimeout(()=>document.querySelector('#pinRow input').focus(),100);
+}
+function submitPin(){
+  const id=document.getElementById('adminDept').value;
+  const pin=Array.from(document.querySelectorAll('#pinRow input')).map(i=>i.value).join('');
+  // معالجة خاصة للمسؤول العام
+  if(id==='superadmin'){
+    // الرقم من Firebase إذا وُجد الكيان، وإلا الافتراضي 1234
+    const saEnt=state.depts.find(d=>d.id==='superadmin');
+    const saPin=saEnt?String(saEnt.pin):'1234';
+    if(pin===saPin){
+      mode='superadmin'; closeOv('ovAdmin'); applyMode();
+      toast('🔑 تم الدخول كمسؤول عام — صلاحية كاملة على جميع الأقسام واللجان');
+    } else {
+      document.getElementById('pinErr').classList.add('show');
+      document.querySelectorAll('#pinRow input').forEach(i=>i.value='');
+      document.querySelector('#pinRow input').focus();
+    }
+    return;
+  }
+  // بقية الكيانات
+  const d=dept(id);
+  if(pin===String(d.pin)){
+    mode=id; closeOv('ovAdmin'); applyMode();
+    toast('تم الدخول بصلاحية إدارة «'+d.name+'»');
+  } else {
+    document.getElementById('pinErr').classList.add('show');
+    document.querySelectorAll('#pinRow input').forEach(i=>i.value='');
+    document.querySelector('#pinRow input').focus();
+  }
+}
+function exitAdmin(){mode='view';applyMode();toast('تم الخروج من وضع الإدارة');}
+function applyMode(){
+  const isAdmin=(mode!=='view');
+  document.getElementById('adminBtn').classList.toggle('hide',isAdmin);
+  document.getElementById('exitBtn').classList.toggle('hide',!isAdmin);
+  document.getElementById('modePill').classList.toggle('hide',!isAdmin);
+  if(isAdmin){
+    const d=dept(mode);
+    document.getElementById('modeName').textContent=(isSuperAdmin()?'🔑 ':'')+d.name;
+    // لون شارة الوضع: بنفسجي للمسؤول العام، ذهبي لغيره
+    document.getElementById('modePill').style.background=isSuperAdmin()?'#F3E8FF':'';
+    document.getElementById('modePill').style.color=isSuperAdmin()?'#6B21A8':'';
+  }
+  renderAll();runSlotCheck();
+}
+
+/* ---------- نموذج الاجتماع ---------- */
+function openMtgForm(id,askDelete){
+  const isEdit=!!id;
+  document.getElementById('mtgErr').classList.remove('show');
+  document.getElementById('mtgLiveCheck').innerHTML='';
+  if(isEdit){
+    const m=state.meetings.find(x=>x.id===id);if(!m)return;
+    if(mode!==m.deptId && !isSuperAdmin()){toast('لا يمكنك تعديل اجتماع قسم آخر');return;}
+    document.getElementById('mtgId').value=m.id;
+    document.getElementById('mtgT').value=m.title;
+    document.getElementById('mtgDept').value=m.deptId;
+    document.getElementById('mtgDeptName').value=dept(m.deptId).name;
+    document.getElementById('mtgDate').value=m.date;
+    document.getElementById('mtgStart').value=m.start;
+    document.getElementById('mtgEnd').value=m.end;
+    applyPlaceToForm(m.note,m.deptId);
+    document.getElementById('mtgTitle').innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg> تعديل الاجتماع';
+    document.getElementById('mtgDelBtn').classList.remove('hide');
+  } else {
+    if(mode==='view'){toast('ادخل وضع إدارة قسم أولاً');return;}
+    document.getElementById('mtgId').value='';
+    document.getElementById('mtgT').value='';
+    // superadmin: dropdown لاختيار القسم
+    const sa=isSuperAdmin();
+    document.getElementById('mtgDeptName').classList.toggle('hide',sa);
+    const sasel=document.getElementById('mtgDeptSA');
+    sasel.classList.toggle('hide',!sa);
+    if(sa){
+      const ents=state.depts.filter(d=>entType(d)!=='superadmin');
+      sasel.innerHTML=ents.map(d=>'<option value="'+d.id+'">'+esc(d.name)+'</option>').join('');
+      const firstId=ents[0]?ents[0].id:'';
+      document.getElementById('mtgDept').value=firstId;
+      document.getElementById('mtgDeptName').value='';
+    } else {
+      document.getElementById('mtgDept').value=mode;
+      document.getElementById('mtgDeptName').value=dept(mode).name;
+      sasel.innerHTML='';
+    }
+    const resolvedDept=sa?(sasel.value||''):mode;
+    document.getElementById('mtgDate').value=toISO(new Date());
+    document.getElementById('mtgStart').value='10:00';
+    document.getElementById('mtgEnd').value='11:00';
+    setPlaceOptions(resolvedDept||mode);
+    document.getElementById('mtgPlace').value=isManualPlace(resolvedDept||mode)?'other':'hall';
+    document.getElementById('mtgRemote').value='';
+    document.getElementById('mtgOther').value='';
+    onPlaceChange();
+    document.getElementById('mtgTitle').innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 2v4M16 2v4"/></svg> إضافة اجتماع';
+    document.getElementById('mtgDelBtn').classList.add('hide');
+  }
+  updateMtgHijri();liveMtgCheck();
+  openOv('ovMtg');
+  if(askDelete && isEdit) setTimeout(()=>deleteMtg(),200);
+}
+function onSADeptChange(){
+  const v=document.getElementById('mtgDeptSA').value;
+  document.getElementById('mtgDept').value=v;
+  setPlaceOptions(v);
+  document.getElementById('mtgPlace').value=isManualPlace(v)?'other':'hall';
+  onPlaceChange();
+}
+function updateMtgHijri(){
+  const v=document.getElementById('mtgDate').value;
+  document.getElementById('mtgHijri').textContent=v?hijri(v):'';
+  updateCouncilAlert(v);
+}
+
+/* --- تنبيه مجلس الكلية --- */
+function getNextCouncilMeeting(date){
+  const council=state.depts.find(d=>d.name&&(d.name.includes('مجلس الكلية')||d.name.includes('مجلس كلية')));
+  if(!council||!date)return null;
+  const rs=parseDate(date);
+  const re=new Date(rs.getFullYear(),rs.getMonth()+6,rs.getDate());
+  const inst=instancesInRange(rs,re,state.meetings.filter(m=>m.deptId===council.id));
+  return inst.sort((a,b)=>a._date.localeCompare(b._date))[0]||null;
+}
+function updateCouncilAlert(date){
+  const el=document.getElementById('mtgCouncilAlert');
+  if(!el)return;
+  if(!date){el.innerHTML='';return;}
+  const next=getNextCouncilMeeting(date);
+  if(next){
+    const d=parseDate(next._date);const today=new Date();today.setHours(0,0,0,0);
+    const diff=Math.round((d-today)/86400000);
+    const diffTxt=diff===0?'اليوم':diff===1?'غداً':diff+' يوم';
+    el.innerHTML=`<div style="background:#EEF3FA;border:1px solid #C5D8F0;border-radius:8px;padding:9px 12px;font-size:13px;color:var(--brand-d);margin-top:7px;display:flex;align-items:center;gap:8px">
+      <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+      أقرب اجتماع لمجلس الكلية: <b>${fmtDate(next._date)}</b> — ${fmtTime(next.start)}–${fmtTime(next.end)}
+      <span style="margin-inline-start:auto;background:var(--brand);color:#fff;font-size:11px;padding:2px 8px;border-radius:10px">${diffTxt}</span>
+    </div>`;
+  } else {
+    el.innerHTML='';
+  }
+}
+
+/* --- طباعة --- */
+function printMeetings(){
+  const [rs,re]=horizonRange();
+  const list=state.meetings.slice().sort((a,b)=>a.date===b.date?toMin(a.start)-toMin(b.start):(a.date<b.date?-1:1));
+  let rows='';
+  list.forEach(m=>{
+    const d=dept(m.deptId);
+    rows+=`<tr><td style="padding:8px;border:1px solid #ddd">${esc(m.title)}</td><td style="padding:8px;border:1px solid #ddd">${esc(d.name)}</td><td style="padding:8px;border:1px solid #ddd">${fmtDate(m.date)}</td><td style="padding:8px;border:1px solid #ddd">${fmtTime(m.start)}–${fmtTime(m.end)}</td><td style="padding:8px;border:1px solid #ddd">${m.note?esc(m.note):'—'}</td></tr>`;
+  });
+  const w=window.open('','_blank');
+  w.document.write(`<html dir="rtl"><head><meta charset="UTF-8"><title>قائمة الاجتماعات</title>
+  <style>body{font-family:Tahoma,sans-serif;padding:20px;direction:rtl}h2{color:#1B4F8A}table{width:100%;border-collapse:collapse}th{background:#1B4F8A;color:#fff;padding:10px;text-align:right}td{padding:8px;border:1px solid #ddd}tr:nth-child(even){background:#f5f7fc}.header{margin-bottom:20px;border-bottom:2px solid #1B4F8A;padding-bottom:10px}</style>
+  </head><body>
+  <div class="header"><h2>منصّة إدارة الاجتماعات — كلية الأمير سلطان</h2><p>جامعة الملك سعود — التاريخ: ${new Date().toLocaleDateString('ar-SA')}</p></div>
+  <table><thead><tr><th>الاجتماع</th><th>القسم</th><th>التاريخ</th><th>الوقت</th><th>المكان</th></tr></thead><tbody>${rows}</tbody></table>
+  </body></html>`);
+  w.document.close();w.print();
+}
+
+/* --- البريد الإلكتروني (EmailJS) --- */
+function emailConfigured(){return !!(EMAILJS_CONFIG.publicKey&&EMAILJS_CONFIG.serviceId&&EMAILJS_CONFIG.templateId);}
+async function sendNotifications(mtg){
+  if(!emailConfigured())return;
+  try{
+    emailjs.init(EMAILJS_CONFIG.publicKey);
+    const snap=await db.collection('subscribers').get();
+    if(snap.empty)return;
+    const d=dept(mtg.deptId);
+    for(const s of snap.docs){
+      const sub=s.data();
+      await emailjs.send(EMAILJS_CONFIG.serviceId,EMAILJS_CONFIG.templateId,{
+        to_email:sub.email, to_name:sub.name||'',
+        dept_name:d.name||'', meeting_title:mtg.title,
+        meeting_date:fmtDate(mtg.date), meeting_time:fmtTime(mtg.start)+' – '+fmtTime(mtg.end),
+        meeting_note:mtg.note||'—'
+      });
+    }
+    console.log('✅ إشعارات أُرسلت');
+  }catch(e){console.error('Email error:',e);}
+}
+function saveEmail(){
+  const name=document.getElementById('subName').value.trim();
+  const email=document.getElementById('subEmail').value.trim();
+  const err=document.getElementById('subErr');
+  if(!email||!email.includes('@')){return showErr(err,'الرجاء إدخال بريد إلكتروني صحيح.');}
+  db.collection('subscribers').where('email','==',email).get().then(snap=>{
+    if(!snap.empty){closeOv('ovEmail');localStorage.setItem('emailRegistered','1');toast('بريدك مسجّل مسبقاً ✅');return;}
+    db.collection('subscribers').add({name,email,createdAt:Date.now()})
+      .then(()=>{closeOv('ovEmail');localStorage.setItem('emailRegistered','1');toast('تم تفعيل الإشعارات ✅');})
+      .catch(e=>{showErr(err,'تعذّر الحفظ. تأكد من الاتصال.');});
+  });
+}
+function skipEmail(){closeOv('ovEmail');localStorage.setItem('emailRegistered','skipped');}
+function checkEmailPrompt(){
+  if(!emailConfigured())return;
+  const v=localStorage.getItem('emailRegistered');
+  if(!v)setTimeout(()=>openOv('ovEmail'),2500);
+}
+function liveMtgCheck(){
+  const date=document.getElementById('mtgDate').value,s=document.getElementById('mtgStart').value,e=document.getElementById('mtgEnd').value;
+  const box=document.getElementById('mtgLiveCheck');
+  if(!date||!s||!e||toMin(e)<=toMin(s)){box.innerHTML='';return;}
+  const id=document.getElementById('mtgId').value||null;
+  const clashes=checkSlot(date,s,e,id);
+  if(clashes.length===0){
+    box.innerHTML='<div style="background:var(--ok-bg);border:1px solid var(--ok-line);border-radius:9px;padding:9px 13px;font-size:13px;color:var(--ok);display:flex;align-items:center;gap:8px"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M20 6 9 17l-5-5"/></svg> الموعد متاح — الفجوة لا تقل عن ساعة مع جميع الأقسام</div>';
+  } else {
+    let t='';clashes.forEach(c=>{
+      const g=gap({s:toMin(s),e:toMin(e)},{s:c.s,e:c.e});
+      t+=`<div style="font-size:12.5px;margin-top:4px">${g===0?'⛔':'⚠️'} «${esc(c.title)}» (${dept(c.deptId).name}، ${fmtTime(c.start)}–${fmtTime(c.end)}) — ${g===0?'تداخل مباشر':'فجوة '+g+' دقيقة فقط'}</div>`;
+    });
+    box.innerHTML=`<div style="background:var(--bad-bg);border:1px solid var(--bad-line);border-radius:9px;padding:9px 13px;font-size:13px;color:var(--bad)"><b>⚠️ الفجوة أقل من ساعة</b>${t}</div>`;
+  }
+}
+['mtgDate','mtgStart','mtgEnd'].forEach(()=>{}); // listeners added after DOM via attachLive
+function saveMtg(){
+  const title=document.getElementById('mtgT').value.trim();
+  // القسم: للمسؤول العام يُقرأ من dropdown، لغيره من الحقل المخفي
+  const deptId=isSuperAdmin()
+    ? (document.getElementById('mtgDeptSA').value||document.getElementById('mtgDept').value)
+    : document.getElementById('mtgDept').value;
+  const date=document.getElementById('mtgDate').value;
+  const start=document.getElementById('mtgStart').value;
+  const end=document.getElementById('mtgEnd').value;
+  const err=document.getElementById('mtgErr');
+  if(!title){return showErr(err,'الرجاء كتابة عنوان الاجتماع.');}
+  if(!date){return showErr(err,'الرجاء اختيار التاريخ.');}
+  if(toMin(end)<=toMin(start)){return showErr(err,'وقت النهاية يجب أن يكون بعد البداية.');}
+  if(mode==='view'){return showErr(err,'الرجاء الدخول أولاً.');}
+  if(!isSuperAdmin() && mode!==deptId){return showErr(err,'لا تملك صلاحية لهذا القسم.');}
+  // المكان
+  const placeKind=document.getElementById('mtgPlace').value;
+  const note=buildPlaceText(deptId);
+  if(placeKind==='other'&&!note){return showErr(err,'الرجاء كتابة المكان.');}
+  const id=document.getElementById('mtgId').value;
+  const data={deptId,title,date,start,end,recurrence:'none',note,updatedAt:Date.now()};
+  const op = id ? db.collection('meetings').doc(id).set(data,{merge:true})
+                : db.collection('meetings').add({...data,createdAt:Date.now()});
+  op.then(()=>{closeOv('ovMtg');toast(id?'تم تعديل الاجتماع':'تمت إضافة الاجتماع');if(!id)sendNotifications(data);})
+    .catch(e=>{console.error(e);showErr(err,'تعذّر الحفظ. تأكد من الاتصال.');});
+}
+function deleteMtg(){
+  const id=document.getElementById('mtgId').value;if(!id)return;
+  const m=state.meetings.find(x=>x.id===id);if(!m||(mode!==m.deptId&&!isSuperAdmin()))return;
+  if(!confirm('هل تريد حذف الاجتماع «'+m.title+'»؟'))return;
+  db.collection('meetings').doc(id).delete().then(()=>{closeOv('ovMtg');toast('تم حذف الاجتماع');}).catch(e=>console.error(e));
+}
+
+/* ---------- تعديل القسم ---------- */
+function openDeptEdit(id){
+  if(mode!==id){toast('يمكنك تعديل قسمك فقط');return;}
+  const d=dept(id);
+  document.getElementById('dEditId').value=id;
+  document.getElementById('dName').value=d.name;
+  document.getElementById('dPin').value='';
+  document.getElementById('dErr').classList.remove('show');
+  const pick=document.getElementById('colorPick');
+  pick.innerHTML=COLORS.map(c=>'<button type="button" onclick="pickColor(this,\''+c+'\')" data-c="'+c+'" style="width:34px;height:34px;border-radius:9px;background:'+c+';border:3px solid '+(c===d.color?'var(--ink)':'transparent')+';cursor:pointer"></button>').join('');
+  pick.dataset.sel=d.color;
+  openOv('ovDept');
+}
+function pickColor(btn,c){document.querySelectorAll('#colorPick button').forEach(b=>b.style.borderColor='transparent');btn.style.borderColor='var(--ink)';document.getElementById('colorPick').dataset.sel=c;}
+function saveDept(){
+  const id=document.getElementById('dEditId').value;
+  const name=document.getElementById('dName').value.trim();
+  const color=document.getElementById('colorPick').dataset.sel;
+  const newPin=document.getElementById('dPin').value.trim();
+  const err=document.getElementById('dErr');
+  if(!name){return showErr(err,'الرجاء كتابة اسم القسم.');}
+  if(newPin && !/^\d{4}$/.test(newPin)){return showErr(err,'الرمز يجب أن يكون 4 أرقام.');}
+  const data={name,color};if(newPin)data.pin=newPin;
+  db.collection('departments').doc(id).set(data,{merge:true})
+    .then(()=>{closeOv('ovDept');toast('تم تحديث البيانات');})
+    .catch(e=>{console.error(e);showErr(err,'تعذّر الحفظ.');});
+}
+
+/* ---------- إضافة/حذف اللجان (صلاحية المدير عبر إدارة البرنامج) ---------- */
+function isProgramManager(){ const p=programEntity(); return (p && mode===p.id)||isSuperAdmin(); }
+function openAddCommittee(){
+  if(!isProgramManager()){ toast('الدخول كمدير إدارة البرنامج مطلوب'); return; }
+  document.getElementById('cName').value='';
+  document.getElementById('cPin').value='';
+  document.getElementById('cErr').classList.remove('show');
+  const pick=document.getElementById('cColorPick');
+  const def=COLORS[7];
+  pick.innerHTML=COLORS.map(c=>'<button type="button" onclick="pickCColor(this,\''+c+'\')" data-c="'+c+'" style="width:34px;height:34px;border-radius:9px;background:'+c+';border:3px solid '+(c===def?'var(--ink)':'transparent')+';cursor:pointer"></button>').join('');
+  pick.dataset.sel=def;
+  openOv('ovCommittee');
+}
+function pickCColor(btn,c){document.querySelectorAll('#cColorPick button').forEach(b=>b.style.borderColor='transparent');btn.style.borderColor='var(--ink)';document.getElementById('cColorPick').dataset.sel=c;}
+function saveCommittee(){
+  if(!isProgramManager()){ toast('الدخول كمدير مطلوب'); return; }
+  const name=document.getElementById('cName').value.trim();
+  const color=document.getElementById('cColorPick').dataset.sel;
+  const pin=document.getElementById('cPin').value.trim();
+  const err=document.getElementById('cErr');
+  if(!name){return showErr(err,'الرجاء كتابة اسم اللجنة.');}
+  if(!/^\d{4}$/.test(pin)){return showErr(err,'الرمز يجب أن يكون 4 أرقام.');}
+  const order=120+entsByType('committee').length;
+  db.collection('departments').add({name,color,pin,type:'committee',order})
+    .then(()=>{closeOv('ovCommittee');toast('تمت إضافة اللجنة بنجاح');})
+    .catch(e=>{console.error(e);showErr(err,'تعذّر الحفظ. تأكد من الاتصال.');});
+}
+function deleteCommittee(id){
+  if(!isProgramManager()){ toast('الدخول كمدير مطلوب'); return; }
+  const c=dept(id);
+  const cnt=state.meetings.filter(m=>m.deptId===id).length;
+  const msg=cnt>0
+    ? 'حذف لجنة «'+c.name+'» سيحذف أيضاً '+cnt+' اجتماعاً مرتبطاً بها. هل أنت متأكد؟'
+    : 'هل تريد حذف لجنة «'+c.name+'»؟';
+  if(!confirm(msg)) return;
+  const batch=db.batch();
+  state.meetings.filter(m=>m.deptId===id).forEach(m=>batch.delete(db.collection('meetings').doc(m.id)));
+  batch.delete(db.collection('departments').doc(id));
+  batch.commit().then(()=>{ toast('تم حذف اللجنة'); }).catch(e=>{console.error(e);toast('تعذّر الحذف');});
+}
+
+/* ============================================================
+   نظام الاعتذارات والتعارضات
+   ============================================================ */
+const EXCUSE_LABELS={external:'🏛️ اجتماع خارجي', personal:'🏠 ظرف خاص', other:'📋 أخرى'};
+
+function openExcuseForm(mtgId, mtgDate){
+  const m=state.meetings.find(x=>x.id===mtgId); if(!m) return;
+  const d=dept(m.deptId);
+  const dt=parseDate(mtgDate||m.date);
+  document.getElementById('exMtgId').value=mtgId;
+  document.getElementById('exMtgDate').value=mtgDate||m.date;
+  document.getElementById('exMtgInfo').innerHTML=
+    '<div style="font-weight:700;font-size:14px;color:var(--ink);margin-bottom:5px">'+esc(m.title)+'</div>'+
+    '<div style="font-size:12.5px">'+
+      '<span style="color:var(--brand-d);font-weight:600">'+esc(d.name)+'</span> · '+
+      DOW_AR[dt.getDay()]+' '+dt.getDate()+' '+MON_AR[dt.getMonth()]+' '+dt.getFullYear()+
+      ' · '+fmtTime(m.start)+' – '+fmtTime(m.end)+
+    '</div>';
+  // إعادة ضبط النموذج
+  document.querySelectorAll('input[name="exReason"]').forEach(r=>r.checked=false);
+  document.querySelectorAll('.ex-reason-item').forEach(el=>el.classList.remove('ex-selected'));
+  document.getElementById('exNote').value='';
+  document.getElementById('exName').value='';
+  document.getElementById('exEmpId').value='';
+  document.getElementById('exPhone').value='';
+  document.getElementById('exErr').classList.remove('show');
+  openOv('ovExcuse');
+}
+function selectExReason(val){
+  document.querySelectorAll('input[name="exReason"]').forEach(r=>r.checked=(r.value===val));
+  document.querySelectorAll('.ex-reason-item').forEach(el=>el.classList.remove('ex-selected'));
+  const map={external:'exR1',personal:'exR2',other:'exR3'};
+  if(map[val]) document.getElementById(map[val]).classList.add('ex-selected');
+}
+function onExReasonChange(){
+  const v=document.querySelector('input[name="exReason"]:checked')?.value;
+  if(v) selectExReason(v);
+}
+function saveExcuse(){
+  const mtgId=document.getElementById('exMtgId').value;
+  const mtgDate=document.getElementById('exMtgDate').value;
+  const reason=document.querySelector('input[name="exReason"]:checked')?.value||'';
+  const note=document.getElementById('exNote').value.trim();
+  const name=document.getElementById('exName').value.trim();
+  const empId=document.getElementById('exEmpId').value.trim();
+  const phone=document.getElementById('exPhone').value.trim();
+  const err=document.getElementById('exErr');
+  if(!reason){return showErr(err,'الرجاء اختيار سبب التعارض.');}
+  if(!name){return showErr(err,'الرجاء كتابة الاسم الكامل.');}
+  if(!empId){return showErr(err,'الرجاء كتابة الرقم الوظيفي.');}
+  const m=state.meetings.find(x=>x.id===mtgId);
+  const data={
+    mtgId, mtgDate, mtgTitle:m?m.title:'',
+    deptId:m?m.deptId:'', deptName:m?dept(m.deptId).name:'',
+    reason, reasonLabel:EXCUSE_LABELS[reason]||reason,
+    note, name, empId, phone, createdAt:Date.now()
+  };
+  db.collection('excuses').add(data)
+    .then(()=>{
+      closeOv('ovExcuse');
+      toast('✅ تم إرسال إبلاغك — سيطّلع عليه المسؤول');
+    })
+    .catch(e=>{console.error(e);showErr(err,'تعذّر الإرسال. تأكد من الاتصال.');});
+}
+function deleteExcuse(id){
+  if(!confirm('هل تريد حذف هذا الإبلاغ بعد الاطلاع عليه؟')) return;
+  db.collection('excuses').doc(id).delete()
+    .then(()=>toast('تم حذف الإبلاغ'))
+    .catch(e=>{console.error(e);toast('تعذّر الحذف');});
+}
+
+/* لوحة الاعتذارات — تظهر فقط للمسؤولين عند الدخول */
+function renderExcusesPanel(){
+  if(mode==='view') return '';
+  if(!state.excuses||!state.excuses.length) return '';
+  // جمّع حسب الاجتماع
+  const groups={};
+  state.excuses.forEach(e=>{
+    if(!groups[e.mtgId]) groups[e.mtgId]={title:e.mtgTitle,date:e.mtgDate,deptName:e.deptName,items:[]};
+    groups[e.mtgId].items.push(e);
+  });
+  // فلتر: الاجتماعات ذات صلة بالمسؤول الحالي
+  const myDepts=isSuperAdmin()
+    ? null // كل شيء
+    : [mode]; // قسمه فقط
+  let html='<div class="excuse-panel">';
+  html+='<h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><circle cx="12" cy="12" r="10"/><path d="M12 8v5m0 3h.01"/></svg>الاعتذارات والتعارضات المرسلة</h3>';
+  let hasAny=false;
+  Object.values(groups).forEach(g=>{
+    const mtg=state.meetings.find(m=>m.id===g.items[0].mtgId);
+    if(!isSuperAdmin() && mtg && mtg.deptId!==mode) return;
+    hasAny=true;
+    const dt=g.date?parseDate(g.date):null;
+    const dateStr=dt?DOW_AR[dt.getDay()]+' '+dt.getDate()+' '+MON_AR[dt.getMonth()]+' '+dt.getFullYear():'';
+    html+=`<div class="excuse-group">
+      <div class="excuse-group-head">
+        <div>
+          <div class="eg-title">${esc(g.title||'—')}</div>
+          <div class="eg-meta">${esc(g.deptName||'')}${dateStr?' · '+dateStr:''}</div>
+        </div>
+        <span style="background:var(--bad);color:#fff;font-size:12px;font-weight:700;padding:3px 12px;border-radius:20px">${g.items.length} إبلاغ</span>
+      </div>`;
+    g.items.forEach(e=>{
+      html+=`<div class="excuse-item">
+        <div class="ei-info">
+          <div class="ei-name">${esc(e.name)}</div>
+          <div class="ei-meta">
+            <span>🪪 ${esc(e.empId)}</span>
+            ${e.phone?'<span>📱 '+esc(e.phone)+'</span>':''}
+            <span class="ei-reason">${e.reasonLabel||''}</span>
+          </div>
+          ${e.note?'<div class="ei-note">'+esc(e.note)+'</div>':''}
+          <div style="font-size:11.5px;color:var(--muted);margin-top:4px">${new Date(e.createdAt).toLocaleString('ar-SA')}</div>
+        </div>
+        <button class="excuse-del" onclick="deleteExcuse('${e.id}')">حذف بعد الاطلاع</button>
+      </div>`;
+    });
+    html+='</div>';
+  });
+  if(!hasAny) return '';
+  html+='</div>';
+  return html;
+}
+
+/* ---------- عرض سريع لاجتماع من التقويم ---------- */
+function quickView(id,iso){
+  const m=state.meetings.find(x=>x.id===id);if(!m)return;
+  if(mode===m.deptId||isSuperAdmin()){openMtgForm(id);}
+  else{
+    go('check');
+    setTimeout(()=>{document.getElementById('ckDate').value=iso;document.getElementById('ckStart').value=m.start;document.getElementById('ckEnd').value=m.end;runSlotCheck();},60);
+  }
+}
+
+/* ---------- إضافة للتقويم + إرسال بالبريد ---------- */
+// تنسيق التاريخ والوقت لصيغة iCalendar: YYYYMMDDTHHMMSS
+function icsStamp(iso,hm){
+  const [y,mo,d]=iso.split('-');
+  const [h,mi]=hm.split(':');
+  return y+mo+d+'T'+h+mi+'00';
+}
+// بناء ملف ics وتنزيله — يفتحه الجوال/الكمبيوتر ويضيفه للتقويم مع تنبيه قبل ساعة
+function addToCalendar(id,iso){
+  const m=state.meetings.find(x=>x.id===id);if(!m)return;
+  const d=dept(m.deptId);
+  const dtStart=icsStamp(iso,m.start);
+  const dtEnd=icsStamp(iso,m.end);
+  const stamp=new Date().toISOString().replace(/[-:]/g,'').split('.')[0]+'Z';
+  const uid=id+'-'+iso.replace(/-/g,'')+'@pscems-meetings';
+  // طي السطور الطويلة وتأمين الفواصل حسب معيار ics
+  const icsEsc=s=>(s||'').replace(/\\/g,'\\\\').replace(/;/g,'\\;').replace(/,/g,'\\,').replace(/\n/g,'\\n');
+  const summary=icsEsc(m.title);
+  const loc=icsEsc(m.note||'');
+  const desc=icsEsc('القسم: '+d.name+(m.note?'\n'+m.note:''));
+  const ics=[
+    'BEGIN:VCALENDAR',
+    'VERSION:2.0',
+    'PRODID:-//PSCEMS//Meetings//AR',
+    'CALSCALE:GREGORIAN',
+    'METHOD:PUBLISH',
+    'BEGIN:VEVENT',
+    'UID:'+uid,
+    'DTSTAMP:'+stamp,
+    'DTSTART:'+dtStart,
+    'DTEND:'+dtEnd,
+    'SUMMARY:'+summary,
+    'DESCRIPTION:'+desc,
+    loc?'LOCATION:'+loc:'',
+    'BEGIN:VALARM',
+    'TRIGGER:-PT60M',
+    'ACTION:DISPLAY',
+    'DESCRIPTION:'+summary,
+    'END:VALARM',
+    'END:VEVENT',
+    'END:VCALENDAR'
+  ].filter(Boolean).join('\r\n');
+
+  const blob=new Blob([ics],{type:'text/calendar;charset=utf-8'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  // اسم ملف نظيف
+  const fname=(m.title||'meeting').replace(/[\\/:*?"<>|]/g,'').slice(0,40)+'.ics';
+  a.href=url; a.download=fname;
+  document.body.appendChild(a); a.click();
+  setTimeout(()=>{document.body.removeChild(a);URL.revokeObjectURL(url);},300);
+  toast('تم تجهيز ملف التقويم — افتحه لإضافته');
+}
+
+/* ---------- تصدير كل الاجتماعات لملف .ics (Google Calendar / Outlook) ---------- */
+function exportAllCalendar(filterDeptId){
+  const [rs,re]=horizonRange();
+  const inst=instancesInRange(rs,re)
+    .filter(m=>!filterDeptId||m.deptId===filterDeptId)
+    .sort((a,b)=>a._date===b._date?a.s-b.s:(a._date<b._date?-1:1));
+  if(!inst.length){ toast('لا توجد اجتماعات قادمة للتصدير'); return; }
+  const icsEsc=s=>(s||'').replace(/\\/g,'\\\\').replace(/;/g,'\\;').replace(/,/g,'\\,').replace(/\n/g,'\\n');
+  const stamp=new Date().toISOString().replace(/[-:]/g,'').split('.')[0]+'Z';
+  const lines=['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//PSCEMS//Meetings//AR','CALSCALE:GREGORIAN','METHOD:PUBLISH'];
+  inst.forEach(m=>{
+    const d=dept(m.deptId);
+    const dtStart=icsStamp(m._date,m.start);
+    const dtEnd=icsStamp(m._date,m.end);
+    const uid=m.id+'-'+m._date.replace(/-/g,'')+'@pscems';
+    lines.push(
+      'BEGIN:VEVENT',
+      'UID:'+uid,
+      'DTSTAMP:'+stamp,
+      'DTSTART:'+dtStart,
+      'DTEND:'+dtEnd,
+      'SUMMARY:'+icsEsc(m.title),
+      'DESCRIPTION:'+icsEsc('الجهة: '+d.name+(m.note?'\nالمكان: '+m.note:'')),
+      m.note?'LOCATION:'+icsEsc(m.note):'',
+      'BEGIN:VALARM','TRIGGER:-PT60M','ACTION:DISPLAY','DESCRIPTION:'+icsEsc(m.title),'END:VALARM',
+      'END:VEVENT'
+    ).filter(Boolean);
+  });
+  lines.push('END:VCALENDAR');
+  const blob=new Blob([lines.join('\r\n')],{type:'text/calendar;charset=utf-8'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url;
+  a.download='جدول-الاجتماعات-'+(new Date().toISOString().slice(0,10))+'.ics';
+  document.body.appendChild(a); a.click();
+  setTimeout(()=>{document.body.removeChild(a);URL.revokeObjectURL(url);},300);
+  toast('تم تصدير '+inst.length+' اجتماع — افتح الملف لإضافتها للتقويم');
+}
+// فتح تطبيق البريد برسالة جاهزة فيها تفاصيل الاجتماع
+function emailMeeting(id,iso){
+  const m=state.meetings.find(x=>x.id===id);if(!m)return;
+  const d=dept(m.deptId);
+  const dt=parseDate(iso);
+  const dayName=DOW_AR[dt.getDay()];
+  const dateStr=dt.getDate()+' '+MON_AR[dt.getMonth()]+' '+dt.getFullYear();
+  const subject='دعوة اجتماع: '+m.title;
+  // صيغة المخاطبة الافتتاحية حسب اسم الجهة
+  // مثال: «مجلس الكلية» => «السادة أعضاء مجلس الكلية»
+  const nm=d.name||'';
+  const salutation='السادة أعضاء '+nm+'                  حفظهم الله';
+  const lines=[
+    salutation,
+    '',
+    'السلام عليكم ورحمة الله وبركاته،',
+    '',
+    'نحيطكم علماً بموعد الاجتماع التالي:',
+    '',
+    '• الاجتماع: '+m.title,
+    '• الجهة: '+d.name,
+    '• اليوم والتاريخ: '+dayName+' '+dateStr,
+    '• الوقت: من '+fmtTime(m.start)+' إلى '+fmtTime(m.end),
+    '• المكان: '+(m.note||'—'),
+    '',
+    'وتفضلوا بقبول فائق التحية والتقدير،،،'
+  ].filter(Boolean);
+  const body=lines.join('\n');
+  // mailto يفتح تطبيق البريد الافتراضي (Outlook/Gmail/Mail) برسالة جاهزة
+  const href='mailto:?subject='+encodeURIComponent(subject)+'&body='+encodeURIComponent(body);
+  window.location.href=href;
+}
+
+/* ---------- الجدول العام ---------- */
+function renderPublic(){
+  const el=document.getElementById('view-public');
+  if(!el)return;
+
+  // نطاق 3 أشهر قادمة
+  const rs=new Date(); rs.setHours(0,0,0,0);
+  const re=new Date(rs); re.setMonth(re.getMonth()+3);
+  const inst=instancesInRange(rs,re)
+    .sort((a,b)=>a._date===b._date?a.s-b.s:(a._date<b._date?-1:1));
+
+  // أقرب اجتماع قادم في كل القائمة (لشارة «القادم»)
+  const nextKey = inst.length ? (inst[0]._date+'|'+inst[0].id) : null;
+
+  // ترتيب الكيانات: مجلس → أقسام → إدارة البرنامج → لجان
+  const ordMap={council:0,dept:1,program:2,committee:3};
+  const allEnts=state.depts.filter(d=>entType(d)!=='superadmin')
+    .slice().sort((a,b)=>(ordMap[entType(a)]-ordMap[entType(b)])||((a.order||0)-(b.order||0)));
+  const shownEnts=allEnts.filter(d=>pubFilter==='all'||entType(d)===pubFilter);
+
+  // تجميع حسب القسم
+  const byDept={};
+  allEnts.forEach(d=>{ byDept[d.id]=[]; });
+  inst.forEach(m=>{ if(byDept[m.deptId]) byDept[m.deptId].push(m); });
+
+  // --- بناء بطاقة كل قسم ---
+  let sectionsHtml='';
+  shownEnts.forEach(d=>{
+    const list=byDept[d.id]||[];
+    let rows='';
+    if(list.length){
+      list.forEach(m=>{
+        const dt=parseDate(m._date);
+        const dayName=DOW_AR[dt.getDay()];
+        const fullDate=dt.getDate()+' '+MON_AR[dt.getMonth()]+' '+dt.getFullYear();
+        const isNext=(m._date+'|'+m.id)===nextKey;
+        const nextBadge=isNext
+          ?'<span class="pub-next"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" width="11" height="11"><path d="M13 2 3 14h7l-1 8 10-12h-7z"/></svg>القادم</span>'
+          :'';
+        const dDiff=Math.round((dt-rs)/86400000);
+        // عمود العداد المستقل
+        const countdownCell = dDiff===0
+          ?'<span class="cd-badge cd-today">اليوم</span>'
+          : dDiff===1?'<span class="cd-badge cd-tmrw">غداً</span>'
+          : dDiff<=7?'<span class="cd-badge cd-week"><b>'+dDiff+'</b><small>أيام</small></span>'
+          : dDiff<=30?'<span class="cd-badge cd-month"><b>'+dDiff+'</b><small>يوم</small></span>'
+          : '<span class="cd-badge cd-far"><b>'+dDiff+'</b><small>يوم</small></span>';
+        rows+=`<tr>
+          <td class="cell-title">
+            <div class="pub-title"><span class="dotc" style="background:${d.color}"></span>${esc(m.title)}${nextBadge}</div>
+          </td>
+          <td data-label="التاريخ">
+            <div class="pub-date">
+              <span class="dtxt"><span class="dday">${dayName} </span>${fullDate}</span>
+            </div>
+          </td>
+          <td class="c" data-label="الوقت">
+            <span class="pub-time"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg><span class="pt-txt"><bdi>${fmtTime(m.start)}</bdi> وحتى الساعة <bdi>${fmtTime(m.end)}</bdi></span></span>
+          </td>
+          <td class="c" data-label="المتبقي">${countdownCell}</td>
+          <td data-label="المكان"><span class="pub-note">${m.note?esc(m.note):'—'}</span></td>
+          <td class="cell-actions">
+            <div class="pub-actions">
+              <button class="pub-btn cal" onclick="addToCalendar('${m.id}','${m._date}')">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 2v4M16 2v4M12 13v4M10 15h4"/></svg>
+                أضف للتقويم
+              </button>
+              <button class="pub-btn mail" onclick="emailMeeting('${m.id}','${m._date}')">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg>
+                إرسال بالبريد
+              </button>
+              <button class="pub-btn excuse" onclick="openExcuseForm('${m.id}','${m._date}')">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><circle cx="12" cy="12" r="10"/><path d="M12 8v5m0 3h.01"/></svg>
+                إبلاغ عن تعارض
+              </button>
+            </div>
+          </td>
+        </tr>`;
+      });
+    } else {
+      rows=`<tr class="pub-empty-row"><td colspan="6" class="pub-empty" style="display:block;text-align:center">لا توجد اجتماعات قادمة خلال الأشهر الثلاثة القادمة</td></tr>`;
+    }
+    sectionsHtml+=`
+    <div class="pub-card">
+      <div class="pub-head" style="background:linear-gradient(90deg, ${d.color}14, transparent)">
+        <span style="position:absolute;inset-inline-start:0;top:0;bottom:0;width:6px;background:${d.color}"></span>
+        <span class="pub-ic" style="background:${d.color}">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M3 21h18M5 21V9l7-5 7 5v12M9 21v-6h6v6"/></svg>
+        </span>
+        <span class="pub-name" style="color:${d.color}">${esc(d.name)}</span>
+        <span class="pub-count" style="background:${d.color}1A;color:${d.color}">${list.length} اجتماع قادم</span>
+      </div>
+      <div style="overflow-x:auto">
+        <table class="pub-table">
+          <thead>
+            <tr>
+              <th>عنوان الاجتماع</th>
+              <th>التاريخ</th>
+              <th class="c">الوقت</th>
+              <th class="c">المتبقي</th>
+              <th>المكان</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>${rows}</tbody>
+        </table>
+      </div>
+    </div>`;
+  });
+
+  if(!sectionsHtml){
+    sectionsHtml=`<div class="card card-pad" style="text-align:center;color:var(--muted);padding:40px">لا توجد أقسام مسجّلة بعد</div>`;
+  }
+
+  // --- إشعار للزوار ---
+  const noticeBanner=`
+  <div style="background:var(--ok-bg);border:1px solid var(--ok-line);border-radius:var(--radius);padding:14px 18px;margin-bottom:24px;display:flex;align-items:center;gap:12px">
+    <svg viewBox="0 0 24 24" fill="none" stroke="var(--ok)" stroke-width="2" width="22" height="22" style="flex:0 0 auto"><circle cx="12" cy="12" r="10"/><path d="M12 8v4m0 4h.01"/></svg>
+    <div style="font-size:13.5px;color:var(--ok)">
+      <b>جدول عرض عام — للاطلاع فقط.</b> يعرض جميع الاجتماعات القادمة للأقسام خلال الأشهر الثلاثة القادمة. يتحدث تلقائياً عند إضافة أي اجتماع جديد.
+    </div>
+  </div>`;
+
+  // تاريخ آخر تحديث
+  const now=new Date();
+  const updateStr='آخر تحديث: '+DOW_AR[now.getDay()]+' '+now.getDate()+' '+MON_AR[now.getMonth()]+' '+now.getFullYear()+
+    ' — '+fmtTime(String(now.getHours()).padStart(2,'0')+':'+String(now.getMinutes()).padStart(2,'0'));
+
+  // شريط الفلتر (يظهر فقط إذا كان هناك أكثر من نوع)
+  const typesPresent=[...new Set(allEnts.map(entType))];
+  const fLabels={council:'مجلس الكلية',dept:'الأقسام الأكاديمية',program:'إدارة البرنامج',committee:'اللجان'};
+  let pubFilters='';
+  if(typesPresent.length>1){
+    pubFilters='<div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:22px"><div class="pub-filters" style="margin:0"><button class="fbtn'+(pubFilter==='all'?' active':'')+'" onclick="setPubFilter(\'all\')">الكل</button>';
+    ['council','dept','program','committee'].forEach(t=>{ if(typesPresent.includes(t)) pubFilters+='<button class="fbtn'+(pubFilter===t?' active':'')+'" onclick="setPubFilter(\''+t+'\')">'+fLabels[t]+'</button>'; });
+    pubFilters+='</div>';
+    pubFilters+='<button class="btn btn-ghost btn-sm" onclick="exportAllCalendar()" style="flex:0 0 auto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" width="15" height="15"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 2v4M16 2v4M12 13v4M10 15h4"/></svg> تصدير الكل للتقويم</button></div>';
+  } else {
+    pubFilters='<div style="display:flex;justify-content:flex-end;margin-bottom:16px"><button class="btn btn-ghost btn-sm" onclick="exportAllCalendar()" style="flex:0 0 auto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" width="15" height="15"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 2v4M16 2v4M12 13v4M10 15h4"/></svg> تصدير الكل للتقويم</button></div>';
+  }
+
+  el.innerHTML=`
+    <div class="wrap" style="padding-top:26px;padding-bottom:70px">
+      <div class="page-head">
+        <h2>الجدول العام للاجتماعات</h2>
+        <p>جميع الاجتماعات القادمة لكل الجهات — للاطلاع بدون تسجيل دخول</p>
+        <div class="gold-rule"></div>
+      </div>
+      ${noticeBanner}
+      ${pubFilters}
+      ${sectionsHtml}
+      <div style="text-align:center;color:var(--muted);font-size:12px;margin-top:10px">${updateStr}</div>
+    </div>`;
+}
+
+
+function openOv(id){document.getElementById(id).classList.add('show');}
+function closeOv(id){document.getElementById(id).classList.remove('show');}
+function showErr(el,msg){el.textContent=msg;el.classList.add('show');}
+function toast(msg){
+  const t=document.createElement('div');t.className='toast';
+  t.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M20 6 9 17l-5-5"/></svg>'+esc(msg);
+  document.body.appendChild(t);setTimeout(()=>{t.style.opacity='0';t.style.transition='.3s';setTimeout(()=>t.remove(),300);},2600);
+}
+
+/* ---------- شاشة الإعداد ---------- */
+function showSetup(extraMsg){
+  document.getElementById('app').classList.add('hide');
+  document.getElementById('loadingScreen').classList.add('hide');
+  document.getElementById('tabsBar').classList.add('hide');
+  const s=document.getElementById('setupScreen');s.classList.remove('hide');
+  const rules=`rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /{document=**} {
+      allow read, write: if request.auth != null;
+    }
+  }
+}`;
+  const steps=[
+    ['أنشئ مشروعًا في Firebase','افتح <code>console.firebase.google.com</code> وسجّل الدخول بحساب Google، ثم اضغط «Add project» وأعطه اسمًا (مثل: councils-platform).'],
+    ['أضِف تطبيق ويب','داخل المشروع اضغط على أيقونة الويب <code>&lt;/&gt;</code>، أعطه اسمًا، ثم انسخ كائن الإعداد (firebaseConfig) الذي يظهر لك.'],
+    ['فعِّل قاعدة البيانات Firestore','من القائمة الجانبية: <code>Build ← Firestore Database ← Create database</code>. اختر «Production mode» وأي موقع قريب.'],
+    ['فعِّل تسجيل الدخول المجهول','من القائمة: <code>Build ← Authentication ← Get started ← Anonymous</code> ثم فعّله واحفظ.'],
+    ['الصق قواعد الأمان','في Firestore افتح تبويب <code>Rules</code>، امسح الموجود والصق التالي ثم <code>Publish</code>:<div class="code-box">'+esc(rules)+'</div>'],
+    ['الصق بيانات الإعداد في الملف','افتح هذا الملف بمحرّر نصوص (مثل Notepad++)، وابحث عن <code>FIREBASE_CONFIG</code> في الأعلى، واستبدل القيم الفارغة بالقيم التي نسختها في الخطوة 2، ثم احفظ وأعد فتح الملف.'],
+  ];
+  let h='';steps.forEach((st,i)=>{h+='<div class="step"><div class="n">'+(i+1)+'</div><div class="c"><b>'+st[0]+'</b><p>'+st[1]+'</p></div></div>';});
+  if(extraMsg)h='<div class="err-msg show" style="margin-bottom:14px">'+esc(extraMsg)+'</div>'+h;
+  document.getElementById('setupSteps').innerHTML=h;
+}
+
+/* ---------- ربط مستمعي الفحص الحي بعد التحميل ---------- */
+function attachLive(){
+  ['mtgDate','mtgStart','mtgEnd'].forEach(id=>{const el=document.getElementById(id);if(el)el.addEventListener('change',()=>{if(id==='mtgDate')updateMtgHijri();liveMtgCheck();});});
+  // إدخال PIN: انتقال تلقائي
+  const pins=document.querySelectorAll('#pinRow input');
+  pins.forEach((inp,idx)=>{
+    inp.addEventListener('input',()=>{inp.value=inp.value.replace(/\D/g,'');if(inp.value&&idx<pins.length-1)pins[idx+1].focus();if(idx===pins.length-1&&inp.value){submitPin();}});
+    inp.addEventListener('keydown',e=>{if(e.key==='Backspace'&&!inp.value&&idx>0)pins[idx-1].focus();});
+  });
+}
+
+window.addEventListener('DOMContentLoaded',()=>{ attachLive(); boot(); });
+</script>
+<!-- modal البريد الإلكتروني -->
+<div class="overlay" id="ovEmail">
+  <div class="modal" style="max-width:430px">
+    <div class="modal-h">
+      <h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" width="20" height="20"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><path d="m22 6-10 7L2 6"/></svg> تفعيل إشعارات البريد</h3>
+      <button class="modal-x" onclick="skipEmail()">✕</button>
+    </div>
+    <div class="modal-b">
+      <p style="font-size:13.5px;color:var(--ink-soft);margin-bottom:16px">أدخل بريدك الإلكتروني لتلقّي إشعار تلقائي عند إضافة أي اجتماع جديد لأي قسم أو مجلس الكلية.</p>
+      <div class="field"><label>الاسم</label><input id="subName" placeholder="اسمك الكريم"></div>
+      <div class="field"><label>البريد الإلكتروني</label><input type="email" id="subEmail" placeholder="example@ksu.edu.sa" dir="ltr"></div>
+      <div class="err-msg" id="subErr"></div>
+    </div>
+    <div class="modal-f">
+      <button class="btn btn-ghost btn-sm" onclick="skipEmail()">لاحقاً</button>
+      <button class="btn btn-primary btn-sm" onclick="saveEmail()">تفعيل الإشعارات</button>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>
